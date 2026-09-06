@@ -11,7 +11,7 @@ import {
 } from "@/lib/player-session";
 import { playerAPI, sessionAPI } from "@/lib/api-client";
 import { useSocket } from "@/hooks/useSocket";
-import { optionStyle, useCountdownLabel } from "@/lib/quiz-ui";
+import { optionStyle, useCountdownLabel, isTrueFalseQuestion } from "@/lib/quiz-ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -340,7 +340,7 @@ function PlayPage() {
           ) : null}
           <p className="mt-6 text-lg">{question.text}</p>
           <ul className="mt-4 space-y-2 text-left">
-            {question.answers.map((a, i) => (
+            {question.answers.slice(0, isTrueFalseQuestion(question.answers) ? 2 : undefined).map((a, i) => (
               <li
                 key={a.id}
                 className={`rounded-xl px-4 py-3 font-semibold text-quiz-foreground ${optionStyle(i).bg} ${
@@ -377,7 +377,7 @@ function PlayPage() {
         </h1>
 
         <div className="mt-8 grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
-          {question.answers.map(
+          {question.answers.slice(0, isTrueFalseQuestion(question.answers) ? 2 : undefined).map(
             (a: { id: string; text: string }, i: number) => {
               const chosen = data.myAnswer?.answerId === a.id;
               return (

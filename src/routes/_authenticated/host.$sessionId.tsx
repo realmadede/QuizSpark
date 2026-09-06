@@ -8,7 +8,7 @@ import confetti from "canvas-confetti";
 import { sessionAPI } from "@/lib/api-client";
 import { useSocket } from "@/hooks/useSocket";
 import { useAuth } from "@/hooks/useAuth";
-import { optionStyle, useCountdownLabel } from "@/lib/quiz-ui";
+import { optionStyle, useCountdownLabel, isTrueFalseQuestion } from "@/lib/quiz-ui";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -267,7 +267,7 @@ function HostPage() {
             </p>
 
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {data.question.answers.map(
+              {data.question.answers.slice(0, isTrueFalseQuestion(data.question.answers) ? 2 : undefined).map(
                 (
                   answer: {
                     id: string;

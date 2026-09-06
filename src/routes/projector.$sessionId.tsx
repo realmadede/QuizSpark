@@ -5,7 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 import { sessionAPI } from "@/lib/api-client";
 import { useSocket } from "@/hooks/useSocket";
-import { optionStyle, useCountdownLabel } from "@/lib/quiz-ui";
+import { optionStyle, useCountdownLabel, isTrueFalseQuestion } from "@/lib/quiz-ui";
 
 export const Route = createFileRoute("/projector/$sessionId")({
   ssr: false,
@@ -148,7 +148,7 @@ function ProjectorPage() {
       </h1>
 
       <div className="mt-12 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
-        {question.answers.map(
+        {question.answers.slice(0, isTrueFalseQuestion(question.answers) ? 2 : undefined).map(
           (
             answer: {
               id: string;

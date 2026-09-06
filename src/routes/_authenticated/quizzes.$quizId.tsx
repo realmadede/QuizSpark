@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { getQuiz, saveQuiz } from "@/lib/quiz.functions";
 import { createGameSession } from "@/lib/game.functions";
-import { optionStyle } from "@/lib/quiz-ui";
+import { optionStyle, isTrueFalseQuestion } from "@/lib/quiz-ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -285,7 +285,7 @@ function QuizEditor() {
                 ))}
               </ul>
 
-              {question.answers.length < 6 ? (
+              {question.answers.length < (isTrueFalseQuestion(question.answers) ? 2 : 6) ? (
                 <Button
                   size="sm"
                   variant="outline"
