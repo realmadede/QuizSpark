@@ -133,4 +133,3 @@ QuizSpark is an open-source educational project. We welcome developers to clone,
 - `cd backend && npx tsx tests/authz.test.ts` - Run security/authorization tests
 - `cd backend && npx tsx tests/rate-limit.test.ts` - Run rate-limit regression tests
 
-_License: MIT_
