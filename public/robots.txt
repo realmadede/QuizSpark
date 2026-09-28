@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Prevent search engines from indexing private game sessions or dashboards
+Disallow: /play/
+Disallow: /projector/
+Disallow: /auth
+Disallow: /dashboard
+Disallow: /quizzes/
+Disallow: /host/
+Disallow: /results/
+
+Sitemap: https://yourdomain.com/sitemap.xml

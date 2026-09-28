@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -19,13 +19,13 @@ export const Route = createFileRoute("/play/$sessionId")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Playing a Live Quiz — QuizSpark" },
+      { title: "Playing a Live Quiz - QuizSpark" },
       {
         name: "description",
         content:
           "You are in a live QuizSpark session. Answer each question as fast as you can.",
       },
-      { property: "og:title", content: "Playing a Live Quiz — QuizSpark" },
+      { property: "og:title", content: "Playing a Live Quiz - QuizSpark" },
       {
         property: "og:description",
         content: "Answer live quiz questions in real time.",
@@ -171,7 +171,7 @@ function PlayPage() {
           ) : (
             <>
               <h1 className="display-title mt-3 text-4xl">
-                {player.avatar} {player.nickname}
+                {player.nickname}
               </h1>
               <Button
                 variant="ghost"
@@ -205,7 +205,7 @@ function PlayPage() {
                     : "bg-white/10 text-ink-foreground"
                 }`}
               >
-                {p.avatar} {p.nickname}
+                {p.nickname}
               </li>
             ))}
           </ul>
@@ -252,7 +252,7 @@ function PlayPage() {
                   className="flex justify-between rounded-xl bg-white/10 px-4 py-2"
                 >
                   <span>
-                    {i + 1}. {p.avatar} {p.nickname}
+                    {i + 1}. {p.nickname}
                   </span>
                   <span className="font-bold">{p.score}</span>
                 </li>
@@ -298,7 +298,7 @@ function PlayPage() {
                   className="flex justify-between rounded-xl bg-white/10 px-4 py-2"
                 >
                   <span>
-                    {i + 1}. {p.avatar} {p.nickname}
+                    {i + 1}. {p.nickname}
                   </span>
                   <span className="font-bold">{p.score}</span>
                 </li>
@@ -311,6 +311,37 @@ function PlayPage() {
   }
 
   const question = data.question;
+
+  const shuffledAnswers = useMemo(() => {
+    if (!question || !player) return [];
+    const isTF = isTrueFalseQuestion(question.answers);
+    const answersToUse = question.answers.slice(0, isTF ? 2 : undefined);
+    
+    if (isTF) return answersToUse; // Never shuffle True/False
+
+    // Create a stable random seed based on player ID and question ID
+    const str = player.playerId + question.id;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    
+    // Simple PRNG
+    let seed = hash;
+    const random = () => {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    };
+
+    const shuffled = [...answersToUse];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, [question, player?.playerId]);
+
   if (!question) {
     return (
       <main className="ink-surface flex min-h-screen items-center justify-center text-ink-muted">
@@ -340,7 +371,7 @@ function PlayPage() {
           ) : null}
           <p className="mt-6 text-lg">{question.text}</p>
           <ul className="mt-4 space-y-2 text-left">
-            {question.answers.slice(0, isTrueFalseQuestion(question.answers) ? 2 : undefined).map((a, i) => (
+            {shuffledAnswers.map((a: any, i: number) => (
               <li
                 key={a.id}
                 className={`rounded-xl px-4 py-3 font-semibold text-quiz-foreground ${optionStyle(i).bg} ${
@@ -377,27 +408,25 @@ function PlayPage() {
         </h1>
 
         <div className="mt-8 grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
-          {question.answers.slice(0, isTrueFalseQuestion(question.answers) ? 2 : undefined).map(
-            (a: { id: string; text: string }, i: number) => {
-              const chosen = data.myAnswer?.answerId === a.id;
-              return (
-                <button
-                  key={a.id}
-                  type="button"
-                  disabled={answerMutation.isPending}
-                  onClick={() => answerMutation.mutate(a.id)}
-                  className={`min-h-24 rounded-2xl px-5 py-4 text-left text-lg font-bold text-quiz-foreground transition ${
-                    optionStyle(i).bg
-                  } ${answered && !chosen ? "opacity-40" : "active:scale-[0.98]"} ${
-                    chosen ? "ring-4 ring-white" : ""
-                  }`}
-                >
-                  <span className="mr-2">{optionStyle(i).shape}</span>
-                  {a.text}
-                </button>
-              );
-            },
-          )}
+          {shuffledAnswers.map((a: any, i: number) => {
+            const chosen = data.myAnswer?.answerId === a.id;
+            return (
+              <button
+                key={a.id}
+                type="button"
+                disabled={answerMutation.isPending}
+                onClick={() => answerMutation.mutate(a.id)}
+                className={`min-h-24 rounded-2xl px-5 py-4 text-left text-lg font-bold text-quiz-foreground transition ${
+                  optionStyle(i).bg
+                } ${answered && !chosen ? "opacity-40" : "active:scale-[0.98]"} ${
+                  chosen ? "ring-4 ring-white" : ""
+                }`}
+              >
+                <span className="mr-2">{optionStyle(i).shape}</span>
+                {a.text}
+              </button>
+            );
+          })}
         </div>
 
         <p className="mt-6 text-center text-sm text-ink-muted">

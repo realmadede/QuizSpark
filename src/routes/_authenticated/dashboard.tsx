@@ -20,13 +20,13 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Teacher Dashboard — QuizSpark" },
+      { title: "Teacher Dashboard - QuizSpark" },
       {
         name: "description",
         content:
           "Manage your quizzes, review past sessions and launch live QuizSpark games for your students.",
       },
-      { property: "og:title", content: "Teacher Dashboard — QuizSpark" },
+      { property: "og:title", content: "Teacher Dashboard - QuizSpark" },
       {
         property: "og:description",
         content: "Manage quizzes, review results and launch live sessions.",
@@ -183,7 +183,7 @@ function Dashboard() {
               </DialogContent>
             </Dialog>
             <Button asChild variant="ghost">
-              <Link to="/">Join screen</Link>
+              <Link to="/join">Join screen</Link>
             </Button>
             <Button variant="outline" onClick={handleSignOut}>
               Sign out

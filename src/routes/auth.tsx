@@ -12,13 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Teacher Sign In — QuizSpark" },
+      { title: "Teacher Sign In - QuizSpark" },
       {
         name: "description",
         content:
           "Sign in or create a QuizSpark teacher account to build quizzes and host live real-time sessions for your class.",
       },
-      { property: "og:title", content: "Teacher Sign In — QuizSpark" },
+      { property: "og:title", content: "Teacher Sign In - QuizSpark" },
       {
         property: "og:description",
         content:
@@ -83,7 +83,7 @@ function AuthPage() {
           variant="ghost"
           className="text-ink-foreground hover:bg-white/10"
         >
-          <Link to="/">Join a game</Link>
+          <Link to="/join">Join a game</Link>
         </Button>
       </header>
 
@@ -204,6 +204,26 @@ function AuthPage() {
                     </button>
                   </div>
                 </div>
+                
+                <div className="flex items-start space-x-2 pt-2 pb-1">
+                  <input 
+                    type="checkbox" 
+                    id="terms" 
+                    required 
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <Label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed font-normal">
+                    I agree to the{" "}
+                    <Link to="/terms" target="_blank" className="text-primary hover:underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link to="/privacy" target="_blank" className="text-primary hover:underline">
+                      Privacy Policy
+                    </Link>.
+                  </Label>
+                </div>
+
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy ? "Creating account…" : "Create account"}
                 </Button>

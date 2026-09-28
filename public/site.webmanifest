@@ -1,0 +1,16 @@
+{
+  "name": "QuizSpark",
+  "short_name": "QuizSpark",
+  "description": "Real-Time Classroom Quizzes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#00c767",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

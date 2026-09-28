@@ -14,25 +14,18 @@ import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">
-          Page not found
-        </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <main className="flex min-h-screen flex-col items-center justify-center bg-[#fafafa] px-6 text-center text-[#171717] font-sans">
+      <div className="glass-card w-full max-w-md p-10 animate-pop-in">
+        <h1 className="display-title text-[5rem] leading-none text-[#00c767] mb-2">404</h1>
+        <h2 className="display-title text-2xl mb-4">Page not found</h2>
+        <p className="text-[#525252] mb-8 text-sm leading-relaxed">
+          Oops! We couldn't find the page you're looking for. It might have been moved or deleted.
         </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+        <Link to="/" className="btn-primary w-full justify-center">
+          Go back home
+        </Link>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -41,34 +34,42 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back
-          home.
+    <main className="flex min-h-screen flex-col items-center justify-center bg-[#fafafa] px-6 text-center text-[#171717] font-sans">
+      <div className="glass-card w-full max-w-md p-10 animate-pop-in">
+        <h1 className="display-title text-2xl mb-3">Something went wrong</h1>
+        <p className="text-[#525252] mb-8 text-sm leading-relaxed">
+          We're sorry, but something unexpected happened on our end. You can try refreshing or head back home.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="flex flex-col gap-3">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="btn-primary w-full justify-center"
           >
             Try again
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
+          <a href="/" className="btn-ghost w-full justify-center">
             Go home
           </a>
         </div>
       </div>
-    </div>
+    </main>
+  );
+}
+
+function PendingComponent() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#fafafa] font-sans">
+      <div className="flex flex-col items-center gap-4 animate-pop-in">
+        <div className="relative h-12 w-12">
+          <div className="absolute inset-0 rounded-full border-[3.5px] border-[#e5e5e5]"></div>
+          <div className="absolute inset-0 rounded-full border-[3.5px] border-[#00c767] border-t-transparent animate-spin"></div>
+        </div>
+        <p className="text-sm font-semibold text-[#a3a3a3] animate-pulse tracking-wide">Loading QuizSpark...</p>
+      </div>
+    </main>
   );
 }
 
@@ -77,15 +78,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     head: () => ({
       meta: [
         { charSet: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { title: "QuizSpark — Live Classroom Quizzes" },
+        { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1" },
+        { name: "theme-color", content: "#00c767" },
+        { title: "QuizSpark - Live Classroom Quizzes" },
         {
           name: "description",
           content:
             "Run live, real-time quiz games for your training center. Students join with a PIN.",
         },
         { property: "og:type", content: "website" },
+        { property: "og:image", content: "/og-image.jpg" },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: "/og-image.jpg" },
       ],
       links: [
         { rel: "stylesheet", href: appCss },
@@ -99,11 +103,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&display=swap",
         },
-        { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+        { rel: "manifest", href: "/site.webmanifest" },
+        { rel: "apple-touch-icon", href: "/favicon.svg" },
+        { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       ],
     }),
     shellComponent: RootShell,
     component: RootComponent,
+    pendingComponent: PendingComponent,
     notFoundComponent: NotFoundComponent,
     errorComponent: ErrorComponent,
   },

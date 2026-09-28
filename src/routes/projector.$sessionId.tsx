@@ -11,13 +11,13 @@ export const Route = createFileRoute("/projector/$sessionId")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Projector Mode — QuizSpark" },
+      { title: "Projector Mode - QuizSpark" },
       {
         name: "description",
         content:
           "Big-screen projector display for a live QuizSpark session: PIN, questions, stats and leaderboard.",
       },
-      { property: "og:title", content: "Projector Mode — QuizSpark" },
+      { property: "og:title", content: "Projector Mode - QuizSpark" },
       {
         property: "og:description",
         content:

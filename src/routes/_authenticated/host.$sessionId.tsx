@@ -16,13 +16,13 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/_authenticated/host/$sessionId")({
   head: () => ({
     meta: [
-      { title: "Live Game Control — QuizSpark" },
+      { title: "Live Game Control - QuizSpark" },
       {
         name: "description",
         content:
           "Projector view and host controls for your live QuizSpark session: PIN, questions, stats and leaderboard.",
       },
-      { property: "og:title", content: "Live Game Control — QuizSpark" },
+      { property: "og:title", content: "Live Game Control - QuizSpark" },
       {
         property: "og:description",
         content:
@@ -203,7 +203,6 @@ function HostPage() {
                 {data.leaderboard[1] && (
                   <div className="w-1/4 flex flex-col items-center">
                     <span className="font-bold mb-2 text-xl truncate w-full px-2">
-                      {data.leaderboard[1].avatar}{" "}
                       {data.leaderboard[1].nickname}
                     </span>
                     <span className="font-bold text-ink-muted mb-2">
@@ -218,7 +217,6 @@ function HostPage() {
                 {data.leaderboard[0] && (
                   <div className="w-1/3 flex flex-col items-center z-10">
                     <span className="font-bold mb-2 text-2xl text-yellow-400 truncate w-full px-2">
-                      {data.leaderboard[0].avatar}{" "}
                       {data.leaderboard[0].nickname}
                     </span>
                     <span className="font-bold text-ink-muted mb-2">
@@ -233,7 +231,6 @@ function HostPage() {
                 {data.leaderboard[2] && (
                   <div className="w-1/4 flex flex-col items-center">
                     <span className="font-bold mb-2 text-xl truncate w-full px-2">
-                      {data.leaderboard[2].avatar}{" "}
                       {data.leaderboard[2].nickname}
                     </span>
                     <span className="font-bold text-ink-muted mb-2">
@@ -329,7 +326,7 @@ function HostPage() {
                     className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-2"
                   >
                     <span className="font-semibold">
-                      {i + 1}. {p.avatar} {p.nickname}
+                      {i + 1}. {p.nickname}
                     </span>
                     <span className="font-bold">{p.score}</span>
                   </li>
