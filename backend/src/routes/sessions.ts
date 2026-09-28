@@ -290,27 +290,34 @@ router.post(
       let updated = session;
 
       switch (data.action) {
-        case 'start_game':
+        case 'start_game': {
+          const questions = await prisma.question.findMany({ where: { quizId: session.quizId }, orderBy: { position: 'asc' } });
+          const q = questions[0];
           updated = await prisma.gameSession.update({
             where: { id: sessionId },
             data: {
               status: 'question',
               currentQuestionIndex: 0,
               questionStartedAt: new Date(),
-              // questionEndsAt will be set based on time limit
+              questionEndsAt: q ? new Date(Date.now() + q.timeLimitSeconds * 1000) : null,
             },
           });
           break;
+        }
 
-        case 'start_question':
+        case 'start_question': {
+          const questions = await prisma.question.findMany({ where: { quizId: session.quizId }, orderBy: { position: 'asc' } });
+          const q = questions[session.currentQuestionIndex];
           updated = await prisma.gameSession.update({
             where: { id: sessionId },
             data: {
               status: 'question',
               questionStartedAt: new Date(),
+              questionEndsAt: q ? new Date(Date.now() + q.timeLimitSeconds * 1000) : null,
             },
           });
           break;
+        }
 
         case 'end_question':
           updated = await prisma.gameSession.update({
@@ -338,12 +345,14 @@ router.post(
               data: { status: 'finished', endedAt: new Date() },
             });
           } else {
+            const nextQ = questions[next];
             updated = await prisma.gameSession.update({
               where: { id: sessionId },
               data: {
                 status: 'question',
                 currentQuestionIndex: next,
                 questionStartedAt: new Date(),
+                questionEndsAt: nextQ ? new Date(Date.now() + nextQ.timeLimitSeconds * 1000) : null,
               },
             });
           }

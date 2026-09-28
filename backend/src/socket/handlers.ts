@@ -149,8 +149,8 @@ export function initializeSocket(io: Server) {
       }
     });
 
-    socket.on('error', (error) => {
-      console.error("Error occurred");
+    socket.on('error', (_error) => {
+      console.error("Socket error occurred");
     });
   });
 }

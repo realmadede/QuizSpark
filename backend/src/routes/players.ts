@@ -121,8 +121,10 @@ router.post('/state', gameActionLimiter, async (req: Request, res: Response) => 
       myAnswer: myAnswer
         ? {
             answerId: myAnswer.answerId,
-            isCorrect: myAnswer.isCorrect,
-            points: myAnswer.pointsAwarded,
+            ...(session.status !== 'question' && { 
+              isCorrect: myAnswer.isCorrect,
+              points: myAnswer.pointsAwarded 
+            }),
           }
         : null,
       questionIndex: session.currentQuestionIndex,
@@ -237,11 +239,11 @@ router.post('/answer', gameActionLimiter, async (req: Request, res: Response) =>
       });
     }
 
-    // Update player score
+    // Update player score atomically to prevent concurrent race conditions
     await prisma.player.update({
       where: { id: data.playerId },
       data: {
-        score: player.score + pointsDiff,
+        score: { increment: pointsDiff },
       },
     });
 
@@ -253,7 +255,7 @@ router.post('/answer', gameActionLimiter, async (req: Request, res: Response) =>
       });
     }
 
-    return res.json({ pointsAwarded: newPoints });
+    return res.json({ ok: true, message: 'Answer recorded' }); // Do NOT leak pointsAwarded/isCorrect here to prevent cheat scripts
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors });

@@ -89,6 +89,19 @@ router.get('/:quizId', authMiddleware, accountApiLimiter, async (req: Request, r
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
+    // Prevent editing if there are active game sessions
+    const activeSessions = await prisma.gameSession.count({
+      where: {
+        quizId: req.params.quizId,
+        status: { not: 'finished' }
+      }
+    });
+
+    if (activeSessions > 0) {
+      return res.status(400).json({ error: 'Cannot modify a quiz while it has active game sessions.' });
+    }
+
+
     return res.json({
       id: quiz.id,
       title: quiz.title,
@@ -279,6 +292,19 @@ router.delete(
         );
         return res.status(403).json({ error: 'Unauthorized' });
       }
+
+    // Prevent editing if there are active game sessions
+    const activeSessions = await prisma.gameSession.count({
+      where: {
+        quizId: req.params.quizId,
+        status: { not: 'finished' }
+      }
+    });
+
+    if (activeSessions > 0) {
+      return res.status(400).json({ error: 'Cannot modify a quiz while it has active game sessions.' });
+    }
+
 
       await prisma.quiz.delete({
         where: { id: req.params.quizId },
