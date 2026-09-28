@@ -11,7 +11,11 @@ import {
 } from "@/lib/player-session";
 import { playerAPI, sessionAPI } from "@/lib/api-client";
 import { useSocket } from "@/hooks/useSocket";
-import { optionStyle, useCountdownLabel, isTrueFalseQuestion } from "@/lib/quiz-ui";
+import {
+  optionStyle,
+  useCountdownLabel,
+  isTrueFalseQuestion,
+} from "@/lib/quiz-ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -39,9 +43,9 @@ function PlayPage() {
   const { sessionId } = Route.useParams();
   const navigate = useNavigate();
   const [player, setPlayer] = useState<PlayerCredentials | null>(null);
-  const [players, setPlayers] = useState<
-    { id: string; nickname: string; avatar?: string }[]
-  >([]);
+  const [players, setPlayers] = useState<{ id: string; nickname: string }[]>(
+    [],
+  );
 
   useEffect(() => {
     const saved = loadPlayer(sessionId);
@@ -170,9 +174,7 @@ function PlayPage() {
             </form>
           ) : (
             <>
-              <h1 className="display-title mt-3 text-4xl">
-                {player.nickname}
-              </h1>
+              <h1 className="display-title mt-3 text-4xl">{player.nickname}</h1>
               <Button
                 variant="ghost"
                 size="sm"
@@ -243,7 +245,6 @@ function PlayPage() {
                   id: string;
                   nickname: string;
                   score: number;
-                  avatar?: string;
                 },
                 i: number,
               ) => (
@@ -289,7 +290,6 @@ function PlayPage() {
                   id: string;
                   nickname: string;
                   score: number;
-                  avatar?: string;
                 },
                 i: number,
               ) => (
@@ -316,7 +316,7 @@ function PlayPage() {
     if (!question || !player) return [];
     const isTF = isTrueFalseQuestion(question.answers);
     const answersToUse = question.answers.slice(0, isTF ? 2 : undefined);
-    
+
     if (isTF) return answersToUse; // Never shuffle True/False
 
     // Create a stable random seed based on player ID and question ID
@@ -326,7 +326,7 @@ function PlayPage() {
       hash = (hash << 5) - hash + str.charCodeAt(i);
       hash |= 0;
     }
-    
+
     // Simple PRNG
     let seed = hash;
     const random = () => {

@@ -74,12 +74,37 @@ const steps = [
 
 const comparisons = [
   { feature: "Free to use", quizspark: true, kahoot: false, quizizz: false },
-  { feature: "No student accounts needed", quizspark: true, kahoot: true, quizizz: false },
+  {
+    feature: "No student accounts needed",
+    quizspark: true,
+    kahoot: true,
+    quizizz: false,
+  },
   { feature: "Self-hostable", quizspark: true, kahoot: false, quizizz: false },
-  { feature: "Real-time WebSocket sync", quizspark: true, kahoot: true, quizizz: true },
-  { feature: "QR code game join", quizspark: true, kahoot: true, quizizz: true },
-  { feature: "Podium & confetti finish", quizspark: true, kahoot: true, quizizz: false },
-  { feature: "Auto-advance timer mode", quizspark: true, kahoot: false, quizizz: true },
+  {
+    feature: "Real-time WebSocket sync",
+    quizspark: true,
+    kahoot: true,
+    quizizz: true,
+  },
+  {
+    feature: "QR code game join",
+    quizspark: true,
+    kahoot: true,
+    quizizz: true,
+  },
+  {
+    feature: "Podium & confetti finish",
+    quizspark: true,
+    kahoot: true,
+    quizizz: false,
+  },
+  {
+    feature: "Auto-advance timer mode",
+    quizspark: true,
+    kahoot: false,
+    quizizz: true,
+  },
   { feature: "Open source", quizspark: true, kahoot: false, quizizz: false },
 ];
 
@@ -146,15 +171,33 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 // ─── Comparison check/cross ────────────────────────────────────────────────────
 function Check() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c767" strokeWidth={2.5}>
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#00c767"
+      strokeWidth={2.5}
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
   );
 }
 function Cross() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4d4d4" strokeWidth={2.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12" />
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#d4d4d4"
+      strokeWidth={2.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M18 6 6 18M6 6l12 12"
+      />
     </svg>
   );
 }
@@ -175,10 +218,18 @@ function LandingPage() {
         <div className="nav-inner">
           <span className="nav-logo">QuizSpark</span>
           <div className="nav-links">
-            <a href="#features" className="nav-link">Features</a>
-            <a href="#how" className="nav-link">How it works</a>
-            <a href="#pricing" className="nav-link">Pricing</a>
-            <a href="#faq" className="nav-link">FAQ</a>
+            <a href="#features" className="nav-link">
+              Features
+            </a>
+            <a href="#how" className="nav-link">
+              How it works
+            </a>
+            <a href="#pricing" className="nav-link">
+              Pricing
+            </a>
+            <a href="#faq" className="nav-link">
+              FAQ
+            </a>
             <Link to={user ? "/dashboard" : "/auth"} className="nav-cta">
               {user ? "Go to Dashboard" : "Teacher Login"}
             </Link>
@@ -201,18 +252,32 @@ function LandingPage() {
 
         <p className="hero-sub">
           QuizSpark turns any classroom into a live quiz arena. Teachers host,
-          students join with a PIN, and everyone fights for the leaderboard.
-          No friction. Just fun.
+          students join with a PIN, and everyone fights for the leaderboard. No
+          friction. Just fun.
         </p>
 
         <div className="hero-actions">
           <Link to="/auth" className="btn-primary">
             Start for free
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              />
             </svg>
           </Link>
-          <Link to="/join" className="btn-ghost">Join a game</Link>
+          <Link to="/join" className="btn-ghost">
+            Join a game
+          </Link>
         </div>
 
         {/* Mock quiz card */}
@@ -224,17 +289,24 @@ function LandingPage() {
             <span className="mock-bar" />
           </div>
           <div className="mock-body">
-            <div className="mock-question">What year did the Moon Landing occur?</div>
+            <div className="mock-question">
+              What year did the Moon Landing occur?
+            </div>
             <div className="mock-options">
               {["1965", "1969", "1972", "1975"].map((opt, i) => (
-                <div key={opt} className={`mock-option opt-color-${i} ${i === 1 ? "mock-option-selected" : ""}`}>
+                <div
+                  key={opt}
+                  className={`mock-option opt-color-${i} ${i === 1 ? "mock-option-selected" : ""}`}
+                >
                   {opt}
                 </div>
               ))}
             </div>
             <div className="mock-players">
               {["Foxie", "Robo", "Leo", "Panda"].map((p) => (
-                <span key={p} className="mock-chip">{p}</span>
+                <span key={p} className="mock-chip">
+                  {p}
+                </span>
               ))}
             </div>
           </div>
@@ -245,7 +317,9 @@ function LandingPage() {
       <section className="split-section">
         <div className="split-inner">
           <div className="split-card split-teacher glass-card">
-            <div className="split-role-badge split-role-teacher">For Teachers</div>
+            <div className="split-role-badge split-role-teacher">
+              For Teachers
+            </div>
             <h3 className="split-title">Host a game in seconds</h3>
             <ul className="split-list">
               <li>Create quizzes from a clean dashboard</li>
@@ -255,7 +329,9 @@ function LandingPage() {
               <li>See live accuracy and rankings per question</li>
               <li>End with a dramatic podium reveal</li>
             </ul>
-            <Link to="/auth" className="btn-primary split-btn">Create your first quiz</Link>
+            <Link to="/auth" className="btn-primary split-btn">
+              Create your first quiz
+            </Link>
           </div>
 
           <div className="split-divider" aria-hidden>
@@ -263,7 +339,9 @@ function LandingPage() {
           </div>
 
           <div className="split-card split-student glass-card">
-            <div className="split-role-badge split-role-student">For Students</div>
+            <div className="split-role-badge split-role-student">
+              For Students
+            </div>
             <h3 className="split-title">Jump in, no fuss</h3>
             <ul className="split-list">
               <li>No app download, no account needed</li>
@@ -273,7 +351,9 @@ function LandingPage() {
               <li>See your rank on the leaderboard instantly</li>
               <li>Compete for the top spot on the podium</li>
             </ul>
-            <Link to="/join" className="btn-ghost split-btn">Join a live game</Link>
+            <Link to="/join" className="btn-ghost split-btn">
+              Join a live game
+            </Link>
           </div>
         </div>
       </section>
@@ -281,8 +361,12 @@ function LandingPage() {
       {/* ════ FEATURES ════ */}
       <section id="features" className="features-section">
         <div className="section-label">Features</div>
-        <h2 className="section-title">Everything you need to run a killer quiz</h2>
-        <p className="section-sub">Built for educators who care about engagement, not setup complexity.</p>
+        <h2 className="section-title">
+          Everything you need to run a killer quiz
+        </h2>
+        <p className="section-sub">
+          Built for educators who care about engagement, not setup complexity.
+        </p>
         <div className="features-grid">
           {features.map((f) => (
             <div key={f.title} className="feature-card glass-card">
@@ -303,8 +387,8 @@ function LandingPage() {
             </h2>
             <p className="demo-desc">
               A live game runs across three screens simultaneously: the teacher
-              hosts from their laptop, students answer on phones, and a projector
-              screen shows everyone the leaderboard in real time.
+              hosts from their laptop, students answer on phones, and a
+              projector screen shows everyone the leaderboard in real time.
             </p>
             <ul className="demo-bullets">
               <li>Questions appear instantly on every device</li>
@@ -312,7 +396,11 @@ function LandingPage() {
               <li>Rankings shift live between questions</li>
               <li>Podium and confetti fire at the end</li>
             </ul>
-            <Link to="/auth" className="btn-primary" style={{ marginTop: "1.5rem" }}>
+            <Link
+              to="/auth"
+              className="btn-primary"
+              style={{ marginTop: "1.5rem" }}
+            >
               Try it yourself
             </Link>
           </div>
@@ -322,8 +410,17 @@ function LandingPage() {
               <div className="demo-screen-label">Projector</div>
               <div className="demo-leaderboard">
                 <div className="demo-lb-title">Live Leaderboard</div>
-                {["Leo - 1,200 pts", "Robo - 950 pts", "Foxie - 880 pts", "Panda - 710 pts"].map((row, i) => (
-                  <div key={row} className="demo-lb-row" style={{ opacity: 1 - i * 0.15 }}>
+                {[
+                  "Leo - 1,200 pts",
+                  "Robo - 950 pts",
+                  "Foxie - 880 pts",
+                  "Panda - 710 pts",
+                ].map((row, i) => (
+                  <div
+                    key={row}
+                    className="demo-lb-row"
+                    style={{ opacity: 1 - i * 0.15 }}
+                  >
                     <span className="demo-lb-rank">#{i + 1}</span>
                     <span>{row}</span>
                   </div>
@@ -335,7 +432,12 @@ function LandingPage() {
               <div className="demo-phone-q">Capital of Tanzania?</div>
               <div className="demo-phone-opts">
                 {["Dodoma", "Dar es Salaam", "Arusha", "Mwanza"].map((o, i) => (
-                  <div key={o} className={`demo-phone-opt opt-color-${i} ${i === 0 ? "mock-option-selected" : ""}`}>{o}</div>
+                  <div
+                    key={o}
+                    className={`demo-phone-opt opt-color-${i} ${i === 0 ? "mock-option-selected" : ""}`}
+                  >
+                    {o}
+                  </div>
                 ))}
               </div>
             </div>
@@ -363,7 +465,9 @@ function LandingPage() {
         <div className="comparison-inner">
           <div className="section-label">Comparison</div>
           <h2 className="section-title">How we stack up</h2>
-          <p className="section-sub">See why QuizSpark is the smarter choice for modern classrooms.</p>
+          <p className="section-sub">
+            See why QuizSpark is the smarter choice for modern classrooms.
+          </p>
           <div className="comparison-table-wrapper glass-card">
             <table className="comparison-table">
               <thead>
@@ -378,9 +482,15 @@ function LandingPage() {
                 {comparisons.map((row) => (
                   <tr key={row.feature}>
                     <td className="comp-feature-name">{row.feature}</td>
-                    <td className="comp-cell">{row.quizspark ? <Check /> : <Cross />}</td>
-                    <td className="comp-cell">{row.kahoot ? <Check /> : <Cross />}</td>
-                    <td className="comp-cell">{row.quizizz ? <Check /> : <Cross />}</td>
+                    <td className="comp-cell">
+                      {row.quizspark ? <Check /> : <Cross />}
+                    </td>
+                    <td className="comp-cell">
+                      {row.kahoot ? <Check /> : <Cross />}
+                    </td>
+                    <td className="comp-cell">
+                      {row.quizizz ? <Check /> : <Cross />}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -395,21 +505,40 @@ function LandingPage() {
           <div className="trust-grid">
             <div className="trust-card glass-card">
               <div className="trust-icon" aria-hidden>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00c767" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#00c767"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
               <h3 className="trust-title">Zero Student Data</h3>
               <p className="trust-desc">
-                We collect absolutely no student personal information. There are no
-                accounts, no emails, and no tracking. Students are 100% anonymous,
-                meaning QuizSpark is inherently safe for any classroom.
+                We collect absolutely no student personal information. There are
+                no accounts, no emails, and no tracking. Students are 100%
+                anonymous, meaning QuizSpark is inherently safe for any
+                classroom.
               </p>
             </div>
-            
+
             <div className="trust-card glass-card">
               <div className="trust-icon" aria-hidden>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00c767" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#00c767"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M5 12.55a11 11 0 0 1 14.08 0" />
                   <path d="M1.42 9a16 16 0 0 1 21.16 0" />
                   <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
@@ -418,9 +547,10 @@ function LandingPage() {
               </div>
               <h3 className="trust-title">Built for Real Networks</h3>
               <p className="trust-desc">
-                School Wi-Fi can be unpredictable. QuizSpark uses highly optimized
-                WebSockets that consume kilobytes of data, not megabytes. It runs
-                flawlessly on older smartphones and 3G connections.
+                School Wi-Fi can be unpredictable. QuizSpark uses highly
+                optimized WebSockets that consume kilobytes of data, not
+                megabytes. It runs flawlessly on older smartphones and 3G
+                connections.
               </p>
             </div>
           </div>
@@ -432,49 +562,114 @@ function LandingPage() {
         <div className="story-inner">
           <div className="section-label">The Story Behind QuizSpark</div>
           <h2 className="section-title">Built During Practical Training</h2>
-          
+
           <div className="story-card glass-card">
             <div className="story-content">
               <p>
-                QuizSpark was developed as part of a practical training session at{" "}
-                <a 
-                  href="https://safcofintech.co.tz/" 
-                  target="_blank" 
+                QuizSpark was developed as part of a practical training session
+                at{" "}
+                <a
+                  href="https://safcofintech.co.tz/"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#00c767] hover:underline font-semibold"
                 >
                   SAFCO FinTech
                 </a>
-                , a center dedicated to providing hands-on technology and computer education in Tanzania. 
-                The project emerged directly from this learning environment with a clear goal: to make 
+                , a center dedicated to providing hands-on technology and
+                computer education in Tanzania. The project emerged directly
+                from this learning environment with a clear goal: to make
                 classroom education more interactive.
               </p>
               <p>
-                Rather than building a standard demonstration app, the objective was to apply real-world 
-                software engineering skills to a genuine educational use case. QuizSpark seamlessly combines 
-                classroom interaction, quiz management, and real-time student participation into a single, 
-                cohesive platform.
+                Rather than building a standard demonstration app, the objective
+                was to apply real-world software engineering skills to a genuine
+                educational use case. QuizSpark seamlessly combines classroom
+                interaction, quiz management, and real-time student
+                participation into a single, cohesive platform.
               </p>
               <p>
-                Ultimately, this project represents both a meaningful training experience and a practical 
-                tool designed to keep students actively engaged and help instructors deliver dynamic, 
+                Ultimately, this project represents both a meaningful training
+                experience and a practical tool designed to keep students
+                actively engaged and help instructors deliver dynamic,
                 technology-driven lessons.
               </p>
             </div>
-            
+
             <div className="story-visual-flow" aria-hidden="true">
               <div className="story-visual-item">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
                 Practical Training
               </div>
-              <svg className="story-visual-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <svg
+                className="story-visual-arrow"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
               <div className="story-visual-item">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="16 18 22 12 16 6" />
+                  <polyline points="8 6 2 12 8 18" />
+                </svg>
                 Real Project
               </div>
-              <svg className="story-visual-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <svg
+                className="story-visual-arrow"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
               <div className="story-visual-item">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
                 Educational Tool
               </div>
             </div>
@@ -487,7 +682,9 @@ function LandingPage() {
         <div className="pricing-inner">
           <div className="section-label">Pricing</div>
           <h2 className="section-title">Simple, honest pricing</h2>
-          <p className="section-sub">No tiers. No upsells. Education should be free.</p>
+          <p className="section-sub">
+            No tiers. No upsells. Education should be free.
+          </p>
           <div className="pricing-card glass-card">
             <div className="pricing-badge">Always free</div>
             <div className="pricing-amount">$0</div>
@@ -500,8 +697,12 @@ function LandingPage() {
               <li>QR code &amp; PIN sharing</li>
               <li>Podium &amp; confetti finish</li>
             </ul>
-            <Link to="/auth" className="btn-primary pricing-cta">Get started, it's free</Link>
-            <p className="pricing-note">No credit card. No trial. Just sign up and go.</p>
+            <Link to="/auth" className="btn-primary pricing-cta">
+              Get started, it's free
+            </Link>
+            <p className="pricing-note">
+              No credit card. No trial. Just sign up and go.
+            </p>
           </div>
         </div>
       </section>
@@ -509,7 +710,9 @@ function LandingPage() {
       {/* ════ TECH STACK ════ */}
       <section className="tech-section">
         <div className="tech-inner">
-          <p className="tech-label">Built on rock-solid open source technology</p>
+          <p className="tech-label">
+            Built on rock-solid open source technology
+          </p>
           <div className="tech-pills">
             {techStack.map((t) => (
               <div key={t.name} className="tech-pill glass-card">
@@ -538,9 +741,13 @@ function LandingPage() {
       <section className="contact-section">
         <div className="contact-inner">
           <div className="contact-card glass-card">
-            <div className="contact-avatar" aria-hidden>R</div>
+            <div className="contact-avatar" aria-hidden>
+              R
+            </div>
             <div className="contact-body">
-              <div className="section-label" style={{ marginBottom: "0.5rem" }}>Talk to the developer</div>
+              <div className="section-label" style={{ marginBottom: "0.5rem" }}>
+                Talk to the developer
+              </div>
               <h2 className="contact-title">Have a question or idea?</h2>
               <p className="contact-desc">
                 QuizSpark is built and maintained by one developer. If you have
@@ -555,27 +762,49 @@ function LandingPage() {
                   rel="noopener noreferrer"
                   className="contact-email-btn"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.24c3-.34 6-1.53 6-6.6a5.44 5.44 0 0 0-1.5-3.8 5.08 5.08 0 0 0 .1-3.77s-1.2-.4-3.9 1.4a13.3 13.3 0 0 0-7 0C6.2 1.5 5 1.9 5 1.9a5.08 5.08 0 0 0 .1 3.77A5.44 5.44 0 0 0 3.5 9.5c0 5 3 6.2 6 6.5A4.8 4.8 0 0 0 8.5 19v3" />
                   </svg>
                   Visit GitHub
                 </a>
                 <button
                   type="button"
-                  onClick={() => { window.location.href = `mailto:${atob("YmFnb213YXJhcGhhZWxAZ21haWwuY29t")}`; }}
+                  onClick={() => {
+                    window.location.href = `mailto:${atob("YmFnb213YXJhcGhhZWxAZ21haWwuY29t")}`;
+                  }}
                   className="contact-email-btn"
-                  style={{ background: '#f5f5f5', color: '#171717', border: '1px solid #e5e5e5' }}
+                  style={{
+                    background: "#f5f5f5",
+                    color: "#171717",
+                    border: "1px solid #e5e5e5",
+                  }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <rect width="20" height="16" x="2" y="4" rx="2" />
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                   </svg>
                   Email Developer
                 </button>
               </div>
-              <p className="contact-note">
-                Usually responds within 24 hours.
-              </p>
+              <p className="contact-note">Usually responds within 24 hours.</p>
             </div>
           </div>
         </div>
@@ -587,11 +816,16 @@ function LandingPage() {
           <div className="cta-glow" aria-hidden />
           <h2 className="cta-title">Ready to spark your classroom?</h2>
           <p className="cta-sub">
-            Free to use. No credit card required. Students never need an account.
+            Free to use. No credit card required. Students never need an
+            account.
           </p>
           <div className="cta-actions">
-            <Link to="/auth" className="btn-primary">Create your first quiz</Link>
-            <Link to="/join" className="btn-ghost-dark">Already have a PIN? Join →</Link>
+            <Link to="/auth" className="btn-primary">
+              Create your first quiz
+            </Link>
+            <Link to="/join" className="btn-ghost-dark">
+              Already have a PIN? Join →
+            </Link>
           </div>
         </div>
       </section>
@@ -599,15 +833,31 @@ function LandingPage() {
       {/* ════ FOOTER ════ */}
       <footer className="landing-footer">
         <span className="footer-logo">QuizSpark</span>
-        <p className="footer-tagline">Made with love for educators &amp; learners everywhere.</p>
+        <p className="footer-tagline">
+          Made with love for educators &amp; learners everywhere.
+        </p>
         <div className="footer-links">
-          <a href="#features" className="footer-link">Features</a>
-          <a href="#pricing" className="footer-link">Pricing</a>
-          <a href="#faq" className="footer-link">FAQ</a>
-          <Link to="/join" className="footer-link">Join a game</Link>
-          <Link to="/auth" className="footer-link">Teacher Login</Link>
-          <Link to="/privacy" className="footer-link">Privacy Policy</Link>
-          <Link to="/terms" className="footer-link">Terms of Service</Link>
+          <a href="#features" className="footer-link">
+            Features
+          </a>
+          <a href="#pricing" className="footer-link">
+            Pricing
+          </a>
+          <a href="#faq" className="footer-link">
+            FAQ
+          </a>
+          <Link to="/join" className="footer-link">
+            Join a game
+          </Link>
+          <Link to="/auth" className="footer-link">
+            Teacher Login
+          </Link>
+          <Link to="/privacy" className="footer-link">
+            Privacy Policy
+          </Link>
+          <Link to="/terms" className="footer-link">
+            Terms of Service
+          </Link>
         </div>
       </footer>
     </div>

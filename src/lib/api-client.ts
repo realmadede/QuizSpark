@@ -19,18 +19,13 @@ async function request<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  const token = localStorage.getItem("token");
-
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
   };
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
   const response = await fetch(url, {
+    credentials: "include",
     ...options,
     headers,
   });
@@ -72,6 +67,8 @@ export const authAPI = {
       fullName?: string;
       roles: string[];
     }>("/auth/me", { method: "GET" }),
+
+  logout: () => request<{ ok: boolean }>("/auth/logout", { method: "POST" }),
 
   forgotPassword: (email: string) =>
     request<{ ok: boolean }>("/auth/forgot-password", {
@@ -184,7 +181,7 @@ export const sessionAPI = {
       body: JSON.stringify({ quizId }),
     }),
 
-  join: (pin: string, nickname: string, avatar?: string) =>
+  join: (pin: string, nickname: string) =>
     request<{
       ok: boolean;
       message?: string;
@@ -192,10 +189,9 @@ export const sessionAPI = {
       playerId?: string;
       token?: string;
       nickname?: string;
-      avatar?: string;
     }>("/sessions/join", {
       method: "POST",
-      body: JSON.stringify({ pin, nickname, avatar }),
+      body: JSON.stringify({ pin, nickname }),
     }),
 
   get: async (sessionId: string) => {
@@ -225,7 +221,6 @@ export const sessionAPI = {
       players: Array<{
         id: string;
         nickname: string;
-        avatar: string;
         score: number;
         correct: number;
         answered: number;
@@ -293,7 +288,6 @@ export const playerAPI = {
       leaderboard: Array<{
         id: string;
         nickname: string;
-        avatar?: string;
         score: number;
       }>;
     }>("/players/state", {

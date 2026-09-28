@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { prisma } from '../index';
+import { prisma } from '../prisma';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
-import { io } from '../index';
+import { accountApiLimiter, gameActionLimiter } from '../middleware/rate-limit';
+import { io } from '../socket/io';
 
 const router = Router();
 
@@ -26,7 +27,6 @@ const createSessionSchema = z.object({
 const joinSessionSchema = z.object({
   pin: z.string().regex(/^\d{6}$/, 'PIN must be 6 digits'),
   nickname: z.string().min(1).max(20),
-  avatar: z.string().min(1).max(10).optional(),
 });
 
 const hostActionSchema = z.object({
@@ -41,7 +41,7 @@ const hostActionSchema = z.object({
 });
 
 // Create game session
-router.post('/', authMiddleware, async (req: Request, res: Response) => {
+router.post('/', authMiddleware, accountApiLimiter, async (req: Request, res: Response) => {
   try {
     const data = createSessionSchema.parse(req.body);
 
@@ -56,6 +56,9 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     }
 
     if (quiz.ownerId !== req.user!.userId) {
+      console.warn(
+        `[SECURITY - 403 UNAUTHORIZED] Access denied for user ${req.user?.userId || 'unknown'} on route ${req.originalUrl}. IP: ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+      );
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -91,63 +94,65 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
 });
 
 // Join game session
-router.post('/join', optionalAuthMiddleware, async (req: Request, res: Response) => {
-  try {
-    const data = joinSessionSchema.parse(req.body);
+router.post(
+  '/join',
+  optionalAuthMiddleware,
+  gameActionLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const data = joinSessionSchema.parse(req.body);
 
-    const session = await prisma.gameSession.findUnique({
-      where: { pin: data.pin },
-    });
+      const session = await prisma.gameSession.findUnique({
+        where: { pin: data.pin },
+      });
 
-    if (!session || session.status !== 'lobby') {
-      return res.status(400).json({ ok: false, message: 'No live game found for that PIN' });
-    }
+      if (!session || session.status !== 'lobby') {
+        return res.status(400).json({ ok: false, message: 'No live game found for that PIN' });
+      }
 
-    // Check nickname uniqueness
-    const existingPlayer = await prisma.player.findUnique({
-      where: {
-        sessionId_nickname: {
+      // Check nickname uniqueness
+      const existingPlayer = await prisma.player.findUnique({
+        where: {
+          sessionId_nickname: {
+            sessionId: session.id,
+            nickname: data.nickname,
+          },
+        },
+      });
+
+      if (existingPlayer) {
+        return res.status(400).json({ ok: false, message: 'That nickname is already taken' });
+      }
+
+      const player = await prisma.player.create({
+        data: {
           sessionId: session.id,
           nickname: data.nickname,
         },
-      },
-    });
+      });
 
-    if (existingPlayer) {
-      return res.status(400).json({ ok: false, message: 'That nickname is already taken' });
-    }
+      // Emit event to host
+      io.to(`session:${session.id}`).emit('player_joined', {
+        playerId: player.id,
+        nickname: player.nickname,
+      });
 
-    const player = await prisma.player.create({
-      data: {
+      return res.status(201).json({
+        ok: true,
         sessionId: session.id,
-        nickname: data.nickname,
-        avatar: data.avatar || '🦊',
-      },
-    });
-
-    // Emit event to host
-    io.to(`session:${session.id}`).emit('player_joined', {
-      playerId: player.id,
-      nickname: player.nickname,
-      avatar: player.avatar,
-    });
-
-    return res.status(201).json({
-      ok: true,
-      sessionId: session.id,
-      playerId: player.id,
-      token: player.token,
-      nickname: player.nickname,
-      avatar: player.avatar,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ ok: false, message: 'Invalid input' });
+        playerId: player.id,
+        token: player.token,
+        nickname: player.nickname,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ ok: false, message: 'Invalid input' });
+      }
+      console.error(error);
+      return res.status(500).json({ ok: false, message: 'Failed to join session' });
     }
-    console.error(error);
-    return res.status(500).json({ ok: false, message: 'Failed to join session' });
   }
-});
+);
 
 // Get session details
 router.get('/:sessionId', optionalAuthMiddleware, async (req: Request, res: Response) => {
@@ -207,20 +212,28 @@ router.get('/:sessionId', optionalAuthMiddleware, async (req: Request, res: Resp
           const correct = qAnswers.filter((a) => a.isCorrect).length;
           const wrong = attempted - correct;
 
+          const isHost = req.user && req.user.userId === session.hostId;
+          const isPastQuestion = q.position < session.currentQuestionIndex;
+          const isCurrentFinished =
+            q.position === session.currentQuestionIndex &&
+            session.status !== 'question' &&
+            session.status !== 'lobby';
+          const revealCorrect = isHost || isPastQuestion || isCurrentFinished;
+
           return {
             id: q.id,
             text: q.text,
             position: q.position,
             timeLimit: q.timeLimitSeconds,
             points: q.points,
-            stats: { attempted, correct, wrong },
+            // Only reveal global stats to host or when question is finished
+            ...(revealCorrect && { stats: { attempted, correct, wrong } }),
             answers: q.answers.map((a) => {
               const count = qAnswers.filter((pa) => pa.answerId === a.id).length;
               return {
                 id: a.id,
                 text: a.text,
-                isCorrect: a.isCorrect,
-                count,
+                ...(revealCorrect && { isCorrect: a.isCorrect, count }),
               };
             }),
           };
@@ -232,7 +245,6 @@ router.get('/:sessionId', optionalAuthMiddleware, async (req: Request, res: Resp
         return {
           id: p.id,
           nickname: p.nickname,
-          avatar: p.avatar,
           score: p.score,
           correct,
           answered,
@@ -251,108 +263,116 @@ router.get('/:sessionId', optionalAuthMiddleware, async (req: Request, res: Resp
 });
 
 // Host action (advance game state)
-router.post('/:sessionId/host-action', authMiddleware, async (req: Request, res: Response) => {
-  try {
-    const data = hostActionSchema.parse(req.body);
-    const { sessionId } = req.params;
+router.post(
+  '/:sessionId/host-action',
+  authMiddleware,
+  gameActionLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const data = hostActionSchema.parse(req.body);
+      const { sessionId } = req.params;
 
-    const session = await prisma.gameSession.findUnique({
-      where: { id: sessionId },
-    });
+      const session = await prisma.gameSession.findUnique({
+        where: { id: sessionId },
+      });
 
-    if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
-    }
+      if (!session) {
+        return res.status(404).json({ error: 'Session not found' });
+      }
 
-    if (session.hostId !== req.user!.userId) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
+      if (session.hostId !== req.user!.userId) {
+        console.warn(
+          `[SECURITY - 403 UNAUTHORIZED] Access denied for user ${req.user?.userId || 'unknown'} on route ${req.originalUrl}. IP: ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+        );
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
 
-    let updated = session;
+      let updated = session;
 
-    switch (data.action) {
-      case 'start_game':
-        updated = await prisma.gameSession.update({
-          where: { id: sessionId },
-          data: {
-            status: 'question',
-            currentQuestionIndex: 0,
-            questionStartedAt: new Date(),
-            // questionEndsAt will be set based on time limit
-          },
-        });
-        break;
-
-      case 'start_question':
-        updated = await prisma.gameSession.update({
-          where: { id: sessionId },
-          data: {
-            status: 'question',
-            questionStartedAt: new Date(),
-          },
-        });
-        break;
-
-      case 'end_question':
-        updated = await prisma.gameSession.update({
-          where: { id: sessionId },
-          data: { status: 'results' },
-        });
-        break;
-
-      case 'show_leaderboard':
-        updated = await prisma.gameSession.update({
-          where: { id: sessionId },
-          data: { status: 'leaderboard' },
-        });
-        break;
-
-      case 'next_question': {
-        const questions = await prisma.question.findMany({
-          where: { quizId: session.quizId },
-          orderBy: { position: 'asc' },
-        });
-        const next = session.currentQuestionIndex + 1;
-        if (next >= questions.length) {
-          updated = await prisma.gameSession.update({
-            where: { id: sessionId },
-            data: { status: 'finished', endedAt: new Date() },
-          });
-        } else {
+      switch (data.action) {
+        case 'start_game':
           updated = await prisma.gameSession.update({
             where: { id: sessionId },
             data: {
               status: 'question',
-              currentQuestionIndex: next,
+              currentQuestionIndex: 0,
+              questionStartedAt: new Date(),
+              // questionEndsAt will be set based on time limit
+            },
+          });
+          break;
+
+        case 'start_question':
+          updated = await prisma.gameSession.update({
+            where: { id: sessionId },
+            data: {
+              status: 'question',
               questionStartedAt: new Date(),
             },
           });
+          break;
+
+        case 'end_question':
+          updated = await prisma.gameSession.update({
+            where: { id: sessionId },
+            data: { status: 'results' },
+          });
+          break;
+
+        case 'show_leaderboard':
+          updated = await prisma.gameSession.update({
+            where: { id: sessionId },
+            data: { status: 'leaderboard' },
+          });
+          break;
+
+        case 'next_question': {
+          const questions = await prisma.question.findMany({
+            where: { quizId: session.quizId },
+            orderBy: { position: 'asc' },
+          });
+          const next = session.currentQuestionIndex + 1;
+          if (next >= questions.length) {
+            updated = await prisma.gameSession.update({
+              where: { id: sessionId },
+              data: { status: 'finished', endedAt: new Date() },
+            });
+          } else {
+            updated = await prisma.gameSession.update({
+              where: { id: sessionId },
+              data: {
+                status: 'question',
+                currentQuestionIndex: next,
+                questionStartedAt: new Date(),
+              },
+            });
+          }
+          break;
         }
-        break;
+
+        case 'end_game':
+          updated = await prisma.gameSession.update({
+            where: { id: sessionId },
+            data: { status: 'finished', endedAt: new Date() },
+          });
+          break;
       }
 
-      case 'end_game':
-        updated = await prisma.gameSession.update({
-          where: { id: sessionId },
-          data: { status: 'finished', endedAt: new Date() },
-        });
-        break;
-    }
+      // Emit event to all clients
+      io.to(`session:${sessionId}`).emit('session_updated', {
+        status: updated.status,
+        currentQuestionIndex: updated.currentQuestionIndex,
+      });
 
-    // Emit event to all clients
-    io.to(`session:${sessionId}`).emit('session_updated', {
-      status: updated.status,
-      currentQuestionIndex: updated.currentQuestionIndex,
-    });
-
-    return res.json({ status: updated.status });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
+      return res.json({ status: updated.status });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error(error);
+      return res.status(500).json({ error: 'Failed to perform action' });
     }
-    console.error(error);
-    return res.status(500).json({ error: 'Failed to perform action' });
   }
-});
+);
 
 export default router;

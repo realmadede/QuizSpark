@@ -13,8 +13,8 @@ export function optionStyle(index: number) {
 
 export function isTrueFalseQuestion(answers: { text: string }[]): boolean {
   if (answers.length !== 2) return false;
-  const texts = answers.map(a => a.text.trim().toLowerCase());
-  const hasTrueAndFalse = (texts.includes('true') && texts.includes('false'));
+  const texts = answers.map((a) => a.text.trim().toLowerCase());
+  const hasTrueAndFalse = texts.includes("true") && texts.includes("false");
   return hasTrueAndFalse;
 }
 

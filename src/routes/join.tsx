@@ -60,7 +60,6 @@ function JoinPage() {
         playerId: result.playerId!,
         token: result.token!,
         nickname: result.nickname!,
-        avatar: "",
       });
       navigate({
         to: "/play/$sessionId",

@@ -8,7 +8,11 @@ import confetti from "canvas-confetti";
 import { sessionAPI } from "@/lib/api-client";
 import { useSocket } from "@/hooks/useSocket";
 import { useAuth } from "@/hooks/useAuth";
-import { optionStyle, useCountdownLabel, isTrueFalseQuestion } from "@/lib/quiz-ui";
+import {
+  optionStyle,
+  useCountdownLabel,
+  isTrueFalseQuestion,
+} from "@/lib/quiz-ui";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -264,43 +268,48 @@ function HostPage() {
             </p>
 
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {data.question.answers.slice(0, isTrueFalseQuestion(data.question.answers) ? 2 : undefined).map(
-                (
-                  answer: {
-                    id: string;
-                    text: string;
-                    isCorrect?: boolean;
-                    count?: number;
-                  },
-                  i: number,
-                ) => (
-                  <li
-                    key={answer.id}
-                    className={`rounded-xl p-4 text-quiz-foreground ${optionStyle(i).bg} ${
-                      answer.isCorrect === false ? "opacity-40" : ""
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="font-semibold">
-                        {optionStyle(i).shape} {answer.text}
-                      </span>
-                      {answer.count !== undefined ? (
-                        <span className="font-bold">{answer.count}</span>
-                      ) : null}
-                    </div>
-                    {answer.count !== undefined ? (
-                      <div className="mt-2 h-2 rounded-full bg-black/20">
-                        <div
-                          className="h-2 rounded-full bg-white/80"
-                          style={{
-                            width: `${Math.round((answer.count / maxCount) * 100)}%`,
-                          }}
-                        />
+              {data.question.answers
+                .slice(
+                  0,
+                  isTrueFalseQuestion(data.question.answers) ? 2 : undefined,
+                )
+                .map(
+                  (
+                    answer: {
+                      id: string;
+                      text: string;
+                      isCorrect?: boolean;
+                      count?: number;
+                    },
+                    i: number,
+                  ) => (
+                    <li
+                      key={answer.id}
+                      className={`rounded-xl p-4 text-quiz-foreground ${optionStyle(i).bg} ${
+                        answer.isCorrect === false ? "opacity-40" : ""
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="font-semibold">
+                          {optionStyle(i).shape} {answer.text}
+                        </span>
+                        {answer.count !== undefined ? (
+                          <span className="font-bold">{answer.count}</span>
+                        ) : null}
                       </div>
-                    ) : null}
-                  </li>
-                ),
-              )}
+                      {answer.count !== undefined ? (
+                        <div className="mt-2 h-2 rounded-full bg-black/20">
+                          <div
+                            className="h-2 rounded-full bg-white/80"
+                            style={{
+                              width: `${Math.round((answer.count / maxCount) * 100)}%`,
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                    </li>
+                  ),
+                )}
             </ul>
           </section>
         ) : null}
@@ -317,7 +326,6 @@ function HostPage() {
                     id: string;
                     nickname: string;
                     score: number;
-                    avatar?: string;
                   },
                   i: number,
                 ) => (

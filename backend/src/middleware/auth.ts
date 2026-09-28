@@ -10,10 +10,10 @@ declare global {
   }
 }
 
-import { prisma } from '../index';
+import { prisma } from '../prisma';
 
 export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-  const token = extractToken(req.headers.authorization);
+  const token = req.cookies?.token || extractToken(req.headers.authorization);
 
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -24,14 +24,14 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     return res.status(401).json({ error: 'Invalid token' });
   }
 
-  // Ensure the user actually exists in the database
-  const userExists = await prisma.profile.findUnique({
+  // Ensure the user actually exists in the database and token version matches
+  const user = await prisma.profile.findUnique({
     where: { id: payload.userId },
-    select: { id: true },
+    select: { id: true, tokenVersion: true },
   });
 
-  if (!userExists) {
-    return res.status(401).json({ error: 'User no longer exists' });
+  if (!user || user.tokenVersion !== payload.tokenVersion) {
+    return res.status(401).json({ error: 'Session invalidated or user deleted' });
   }
 
   req.user = payload;
@@ -39,7 +39,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 }
 
 export function optionalAuthMiddleware(req: Request, _res: Response, next: NextFunction) {
-  const token = extractToken(req.headers.authorization);
+  const token = req.cookies?.token || extractToken(req.headers.authorization);
 
   if (token) {
     const payload = verifyToken(token);

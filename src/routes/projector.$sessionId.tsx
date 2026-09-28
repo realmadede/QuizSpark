@@ -5,7 +5,11 @@ import { QRCodeSVG } from "qrcode.react";
 
 import { sessionAPI } from "@/lib/api-client";
 import { useSocket } from "@/hooks/useSocket";
-import { optionStyle, useCountdownLabel, isTrueFalseQuestion } from "@/lib/quiz-ui";
+import {
+  optionStyle,
+  useCountdownLabel,
+  isTrueFalseQuestion,
+} from "@/lib/quiz-ui";
 
 export const Route = createFileRoute("/projector/$sessionId")({
   ssr: false,
@@ -101,7 +105,6 @@ function ProjectorPage() {
                 id: string;
                 nickname: string;
                 score: number;
-                avatar?: string;
               },
               i: number,
             ) => (
@@ -148,32 +151,34 @@ function ProjectorPage() {
       </h1>
 
       <div className="mt-12 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
-        {question.answers.slice(0, isTrueFalseQuestion(question.answers) ? 2 : undefined).map(
-          (
-            answer: {
-              id: string;
-              text: string;
-              isCorrect?: boolean;
-              count?: number;
-            },
-            i: number,
-          ) => (
-            <div
-              key={answer.id}
-              className={`flex items-center justify-between rounded-3xl px-8 py-8 text-3xl font-bold text-quiz-foreground ${
-                optionStyle(i).bg
-              } ${revealed && !answer.isCorrect ? "opacity-40" : ""}`}
-            >
-              <span>
-                <span className="mr-3">{optionStyle(i).shape}</span>
-                {answer.text}
-              </span>
-              {revealed ? (
-                <span className="text-2xl">{answer.count ?? 0}</span>
-              ) : null}
-            </div>
-          ),
-        )}
+        {question.answers
+          .slice(0, isTrueFalseQuestion(question.answers) ? 2 : undefined)
+          .map(
+            (
+              answer: {
+                id: string;
+                text: string;
+                isCorrect?: boolean;
+                count?: number;
+              },
+              i: number,
+            ) => (
+              <div
+                key={answer.id}
+                className={`flex items-center justify-between rounded-3xl px-8 py-8 text-3xl font-bold text-quiz-foreground ${
+                  optionStyle(i).bg
+                } ${revealed && !answer.isCorrect ? "opacity-40" : ""}`}
+              >
+                <span>
+                  <span className="mr-3">{optionStyle(i).shape}</span>
+                  {answer.text}
+                </span>
+                {revealed ? (
+                  <span className="text-2xl">{answer.count ?? 0}</span>
+                ) : null}
+              </div>
+            ),
+          )}
       </div>
 
       <p className="mt-8 text-center text-xl text-ink-muted">

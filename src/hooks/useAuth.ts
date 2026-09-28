@@ -14,23 +14,21 @@ export function useAuth() {
   const [error] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if token exists in localStorage and verify it
-    const token = localStorage.getItem("token");
-    const cachedUser = localStorage.getItem("user");
+    // Always clear legacy tokens
+    localStorage.removeItem("token");
 
-    if (token && cachedUser) {
-      try {
-        const userData = JSON.parse(cachedUser);
+    // Fetch fresh user profile from secure HttpOnly cookie session
+    authAPI
+      .getMe()
+      .then((userData) => {
         setUser(userData);
         setSession({ user: userData });
-      } catch (err) {
-        // Invalid cached data
-        localStorage.removeItem("token");
+        localStorage.setItem("user", JSON.stringify(userData));
+      })
+      .catch(() => {
         localStorage.removeItem("user");
-      }
-    }
-
-    setLoading(false);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return { session, user, loading, error };
@@ -43,7 +41,7 @@ export async function signUp(
 ) {
   try {
     const result = await authAPI.signUp(email, password, fullName);
-    localStorage.setItem("token", result.token);
+    // Token is now set securely via HttpOnly cookies by the backend
     localStorage.setItem("user", JSON.stringify(result.user));
     return { ok: true, user: result.user };
   } catch (error) {
@@ -57,7 +55,7 @@ export async function signUp(
 export async function signIn(email: string, password: string) {
   try {
     const result = await authAPI.signIn(email, password);
-    localStorage.setItem("token", result.token);
+    // Token is now set securely via HttpOnly cookies by the backend
     localStorage.setItem("user", JSON.stringify(result.user));
     return { ok: true, user: result.user };
   } catch (error) {
@@ -69,6 +67,9 @@ export async function signIn(email: string, password: string) {
 }
 
 export function signOut() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+  authAPI.logout().finally(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  });
 }

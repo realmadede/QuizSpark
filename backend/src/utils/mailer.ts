@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { checkQuota } from './quota';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -9,6 +10,14 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
+  // Hard daily quota for Gmail SMTP limit (400 emails / 24 hours)
+  const { allowed } = await checkQuota('global:email_daily', 400, 24 * 60 * 60 * 1000);
+  if (!allowed) {
+    console.error(
+      `[QUOTA EXCEEDED] Cannot send reset email to ${to}. Daily global email limit reached.`
+    );
+    throw new Error('Email quota exceeded');
+  }
   if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
     console.log('\n======================================================');
     console.log(`[TESTING MODE] Forgot Password requested for: ${to}`);
@@ -35,6 +44,13 @@ export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
 };
 
 export const sendEmailVerification = async (to: string, verifyLink: string) => {
+  const { allowed } = await checkQuota('global:email_daily', 400, 24 * 60 * 60 * 1000);
+  if (!allowed) {
+    console.error(
+      `[QUOTA EXCEEDED] Cannot send verification email to ${to}. Daily global email limit reached.`
+    );
+    throw new Error('Email quota exceeded');
+  }
   if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
     console.log('\n======================================================');
     console.log(`[TESTING MODE] Email Verification requested for: ${to}`);

@@ -204,23 +204,35 @@ function AuthPage() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-2 pt-2 pb-1">
-                  <input 
-                    type="checkbox" 
-                    id="terms" 
-                    required 
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    required
                     className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
-                  <Label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed font-normal">
+                  <Label
+                    htmlFor="terms"
+                    className="text-xs text-muted-foreground leading-relaxed font-normal"
+                  >
                     I agree to the{" "}
-                    <Link to="/terms" target="_blank" className="text-primary hover:underline">
+                    <Link
+                      to="/terms"
+                      target="_blank"
+                      className="text-primary hover:underline"
+                    >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link to="/privacy" target="_blank" className="text-primary hover:underline">
+                    <Link
+                      to="/privacy"
+                      target="_blank"
+                      className="text-primary hover:underline"
+                    >
                       Privacy Policy
-                    </Link>.
+                    </Link>
+                    .
                   </Label>
                 </div>
 

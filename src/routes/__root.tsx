@@ -16,10 +16,13 @@ function NotFoundComponent() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#fafafa] px-6 text-center text-[#171717] font-sans">
       <div className="glass-card w-full max-w-md p-10 animate-pop-in">
-        <h1 className="display-title text-[5rem] leading-none text-[#00c767] mb-2">404</h1>
+        <h1 className="display-title text-[5rem] leading-none text-[#00c767] mb-2">
+          404
+        </h1>
         <h2 className="display-title text-2xl mb-4">Page not found</h2>
         <p className="text-[#525252] mb-8 text-sm leading-relaxed">
-          Oops! We couldn't find the page you're looking for. It might have been moved or deleted.
+          Oops! We couldn't find the page you're looking for. It might have been
+          moved or deleted.
         </p>
         <Link to="/" className="btn-primary w-full justify-center">
           Go back home
@@ -38,7 +41,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       <div className="glass-card w-full max-w-md p-10 animate-pop-in">
         <h1 className="display-title text-2xl mb-3">Something went wrong</h1>
         <p className="text-[#525252] mb-8 text-sm leading-relaxed">
-          We're sorry, but something unexpected happened on our end. You can try refreshing or head back home.
+          We're sorry, but something unexpected happened on our end. You can try
+          refreshing or head back home.
         </p>
         <div className="flex flex-col gap-3">
           <button
@@ -67,7 +71,9 @@ function PendingComponent() {
           <div className="absolute inset-0 rounded-full border-[3.5px] border-[#e5e5e5]"></div>
           <div className="absolute inset-0 rounded-full border-[3.5px] border-[#00c767] border-t-transparent animate-spin"></div>
         </div>
-        <p className="text-sm font-semibold text-[#a3a3a3] animate-pulse tracking-wide">Loading QuizSpark...</p>
+        <p className="text-sm font-semibold text-[#a3a3a3] animate-pulse tracking-wide">
+          Loading QuizSpark...
+        </p>
       </div>
     </main>
   );
@@ -78,7 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     head: () => ({
       meta: [
         { charSet: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1" },
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1, maximum-scale=1",
+        },
         { name: "theme-color", content: "#00c767" },
         { title: "QuizSpark - Live Classroom Quizzes" },
         {

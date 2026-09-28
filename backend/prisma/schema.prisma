@@ -32,6 +32,8 @@ model Profile {
   resetTokenExpiresAt DateTime?
   pendingEmail        String?
   emailVerificationToken String?
+  emailVerificationTokenExpiresAt DateTime?
+  tokenVersion        Int      @default(0)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
@@ -137,7 +139,6 @@ model Player {
   id        String   @id @default(uuid())
   sessionId String
   nickname  String
-  avatar    String   @default("🦊")
   score     Int      @default(0)
   token     String   @unique @default(uuid())
   connected Boolean  @default(true)

@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { prisma } from '../index';
-import { io } from '../index';
+import { prisma } from '../prisma';
+import { io } from '../socket/io';
+import { gameActionLimiter } from '../middleware/rate-limit';
 import { calculateScore } from '../utils/scoring';
 
 const router = Router();
@@ -25,7 +26,7 @@ const getPlayerStateSchema = z.object({
 });
 
 // Get player state
-router.post('/state', async (req: Request, res: Response) => {
+router.post('/state', gameActionLimiter, async (req: Request, res: Response) => {
   try {
     const data = getPlayerStateSchema.parse(req.body);
 
@@ -70,7 +71,6 @@ router.post('/state', async (req: Request, res: Response) => {
     const leaderboard = allPlayers.map((p) => ({
       id: p.id,
       nickname: p.nickname,
-      avatar: p.avatar,
       score: p.score,
     }));
 
@@ -111,7 +111,8 @@ router.post('/state', async (req: Request, res: Response) => {
             answers: currentQuestion.answers.map((a) => ({
               id: a.id,
               text: a.text,
-              isCorrect: a.isCorrect,
+              // Only reveal isCorrect if the question has ended
+              ...(session.status !== 'question' && { isCorrect: a.isCorrect }),
             })),
           }
         : null,
@@ -130,7 +131,6 @@ router.post('/state', async (req: Request, res: Response) => {
         rank,
         score: player.score,
         nickname: player.nickname,
-        avatar: player.avatar,
       },
       leaderboard,
     });
@@ -144,7 +144,7 @@ router.post('/state', async (req: Request, res: Response) => {
 });
 
 // Submit answer
-router.post('/answer', async (req: Request, res: Response) => {
+router.post('/answer', gameActionLimiter, async (req: Request, res: Response) => {
   try {
     const data = submitAnswerSchema.parse(req.body);
 
@@ -264,7 +264,7 @@ router.post('/answer', async (req: Request, res: Response) => {
 });
 
 // Rename player
-router.post('/rename', async (req: Request, res: Response) => {
+router.post('/rename', gameActionLimiter, async (req: Request, res: Response) => {
   try {
     const data = renamePlayerSchema.parse(req.body);
 

@@ -23,7 +23,10 @@ function ForgotPasswordPage() {
       setSent(true);
       toast.success("Password reset link sent to your email.");
     } catch (error: Error | unknown) {
-      toast.error((error instanceof Error ? error.message : "") || "Failed to request reset.");
+      toast.error(
+        (error instanceof Error ? error.message : "") ||
+          "Failed to request reset.",
+      );
     } finally {
       setBusy(false);
     }

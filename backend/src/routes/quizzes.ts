@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { prisma } from '../index';
+import { prisma } from '../prisma';
 import { authMiddleware } from '../middleware/auth';
+import { accountApiLimiter } from '../middleware/rate-limit';
 
 const router = Router();
 
@@ -34,7 +35,7 @@ const updateQuizSchema = z.object({
 });
 
 // List quizzes
-router.get('/', authMiddleware, async (req: Request, res: Response) => {
+router.get('/', authMiddleware, accountApiLimiter, async (req: Request, res: Response) => {
   try {
     const quizzes = await prisma.quiz.findMany({
       where: { ownerId: req.user!.userId },
@@ -61,7 +62,7 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
 });
 
 // Get single quiz
-router.get('/:quizId', authMiddleware, async (req: Request, res: Response) => {
+router.get('/:quizId', authMiddleware, accountApiLimiter, async (req: Request, res: Response) => {
   try {
     const quiz = await prisma.quiz.findUnique({
       where: { id: req.params.quizId },
@@ -82,6 +83,9 @@ router.get('/:quizId', authMiddleware, async (req: Request, res: Response) => {
     }
 
     if (quiz.ownerId !== req.user!.userId) {
+      console.warn(
+        `[SECURITY - 403 UNAUTHORIZED] Access denied for user ${req.user?.userId || 'unknown'} on route ${req.originalUrl}. IP: ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+      );
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -110,7 +114,7 @@ router.get('/:quizId', authMiddleware, async (req: Request, res: Response) => {
 });
 
 // Create quiz
-router.post('/', authMiddleware, async (req: Request, res: Response) => {
+router.post('/', authMiddleware, accountApiLimiter, async (req: Request, res: Response) => {
   try {
     const data = createQuizSchema.parse(req.body);
 
@@ -151,7 +155,7 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
 });
 
 // Update quiz
-router.patch('/:quizId', authMiddleware, async (req: Request, res: Response) => {
+router.patch('/:quizId', authMiddleware, accountApiLimiter, async (req: Request, res: Response) => {
   try {
     const data = updateQuizSchema.parse(req.body);
 
@@ -164,6 +168,9 @@ router.patch('/:quizId', authMiddleware, async (req: Request, res: Response) => 
     }
 
     if (quiz.ownerId !== req.user!.userId) {
+      console.warn(
+        `[SECURITY - 403 UNAUTHORIZED] Access denied for user ${req.user?.userId || 'unknown'} on route ${req.originalUrl}. IP: ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+      );
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -211,10 +218,17 @@ router.patch('/:quizId', authMiddleware, async (req: Request, res: Response) => 
           const createdQ = await prisma.question.create({ data: questionData });
           questionId = createdQ.id;
         } else {
-          await prisma.question.update({
-            where: { id: questionId },
-            data: questionData,
-          });
+          // BOLA protection: ensure the question actually belongs to this quiz
+          const existingQ = await prisma.question.findUnique({ where: { id: questionId } });
+          if (existingQ && existingQ.quizId === req.params.quizId) {
+            await prisma.question.update({
+              where: { id: questionId },
+              data: questionData,
+            });
+          } else {
+            // Ignore malicious cross-quiz update attempts
+            continue;
+          }
         }
 
         // Delete existing answers for this question
@@ -245,29 +259,37 @@ router.patch('/:quizId', authMiddleware, async (req: Request, res: Response) => 
 });
 
 // Delete quiz
-router.delete('/:quizId', authMiddleware, async (req: Request, res: Response) => {
-  try {
-    const quiz = await prisma.quiz.findUnique({
-      where: { id: req.params.quizId },
-    });
+router.delete(
+  '/:quizId',
+  authMiddleware,
+  accountApiLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const quiz = await prisma.quiz.findUnique({
+        where: { id: req.params.quizId },
+      });
 
-    if (!quiz) {
-      return res.status(404).json({ error: 'Quiz not found' });
+      if (!quiz) {
+        return res.status(404).json({ error: 'Quiz not found' });
+      }
+
+      if (quiz.ownerId !== req.user!.userId) {
+        console.warn(
+          `[SECURITY - 403 UNAUTHORIZED] Access denied for user ${req.user?.userId || 'unknown'} on route ${req.originalUrl}. IP: ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+        );
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
+      await prisma.quiz.delete({
+        where: { id: req.params.quizId },
+      });
+
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Failed to delete quiz' });
     }
-
-    if (quiz.ownerId !== req.user!.userId) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
-    await prisma.quiz.delete({
-      where: { id: req.params.quizId },
-    });
-
-    return res.json({ ok: true });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Failed to delete quiz' });
   }
-});
+);
 
 export default router;

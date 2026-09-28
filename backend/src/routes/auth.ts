@@ -2,12 +2,26 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { z } from 'zod';
-import { prisma } from '../index';
+import { prisma } from '../prisma';
 import { generateToken } from '../utils/jwt';
 import { authMiddleware } from '../middleware/auth';
+import { authLimiter, tokenLimiter } from '../middleware/rate-limit';
 import { sendPasswordResetEmail, sendEmailVerification } from '../utils/mailer';
 
 const router = Router();
+
+// Helper for hashing tokens
+const hashToken = (token: string) => crypto.createHash('sha256').update(token).digest('hex');
+
+// Set cookie helper
+const setTokenCookie = (res: Response, token: string) => {
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+};
 
 // Validation schemas
 const signUpSchema = z.object({
@@ -22,7 +36,7 @@ const signInSchema = z.object({
 });
 
 // Sign up
-router.post('/sign-up', async (req: Request, res: Response) => {
+router.post('/sign-up', authLimiter, async (req: Request, res: Response) => {
   try {
     const data = signUpSchema.parse(req.body);
 
@@ -59,7 +73,9 @@ router.post('/sign-up', async (req: Request, res: Response) => {
     const token = generateToken({
       userId: user.id,
       email: user.email,
+      tokenVersion: user.tokenVersion,
     });
+    setTokenCookie(res, token);
 
     return res.status(201).json({
       token,
@@ -79,7 +95,7 @@ router.post('/sign-up', async (req: Request, res: Response) => {
 });
 
 // Sign in
-router.post('/sign-in', async (req: Request, res: Response) => {
+router.post('/sign-in', authLimiter, async (req: Request, res: Response) => {
   try {
     const data = signInSchema.parse(req.body);
 
@@ -89,20 +105,28 @@ router.post('/sign-in', async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.warn(
+        `[SECURITY - FAILED LOGIN] Attempt with non-existent email. IP: ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+      );
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.warn(
+        `[SECURITY - FAILED LOGIN] Invalid password for user ID: ${user.id}. IP: ${req.headers['x-forwarded-for'] || req.socket.remoteAddress}`
+      );
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     // Generate token
     const token = generateToken({
       userId: user.id,
       email: user.email,
+      tokenVersion: user.tokenVersion,
     });
+    setTokenCookie(res, token);
 
     return res.json({
       token,
@@ -118,6 +142,23 @@ router.post('/sign-in', async (req: Request, res: Response) => {
     }
     console.error(error);
     return res.status(500).json({ error: 'Failed to sign in' });
+  }
+});
+
+// Get current user
+// Logout
+router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.userId;
+    await prisma.profile.update({
+      where: { id: userId },
+      data: { tokenVersion: { increment: 1 } },
+    });
+    res.clearCookie('token');
+    return res.json({ ok: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Failed to log out' });
   }
 });
 
@@ -173,12 +214,13 @@ router.put('/me', authMiddleware, async (req: Request, res: Response) => {
         return res.status(409).json({ error: 'Email already in use' });
       }
 
-      const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+      const rawToken = crypto.randomBytes(32).toString('hex');
       updateData.pendingEmail = data.email;
-      updateData.emailVerificationToken = emailVerificationToken;
+      updateData.emailVerificationToken = hashToken(rawToken);
+      updateData.emailVerificationTokenExpiresAt = new Date(Date.now() + 3600000);
 
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const verifyLink = `${frontendUrl}/verify-email?token=${emailVerificationToken}`;
+      const verifyLink = `${frontendUrl}/verify-email?token=${rawToken}`;
       await sendEmailVerification(data.email, verifyLink);
       emailVerificationSent = true;
     }
@@ -208,12 +250,15 @@ const verifyEmailSchema = z.object({
 });
 
 // Verify email
-router.post('/verify-email', async (req: Request, res: Response) => {
+router.post('/verify-email', tokenLimiter, async (req: Request, res: Response) => {
   try {
     const data = verifyEmailSchema.parse(req.body);
 
     const user = await prisma.profile.findFirst({
-      where: { emailVerificationToken: data.token },
+      where: {
+        emailVerificationToken: hashToken(data.token),
+        emailVerificationTokenExpiresAt: { gt: new Date() },
+      },
     });
 
     if (!user || !user.pendingEmail) {
@@ -232,6 +277,7 @@ router.post('/verify-email', async (req: Request, res: Response) => {
         email: user.pendingEmail,
         pendingEmail: null,
         emailVerificationToken: null,
+        emailVerificationTokenExpiresAt: null,
       },
     });
 
@@ -255,23 +301,23 @@ const resetPasswordSchema = z.object({
 });
 
 // Forgot password
-router.post('/forgot-password', async (req: Request, res: Response) => {
+router.post('/forgot-password', tokenLimiter, async (req: Request, res: Response) => {
   try {
     const data = forgotPasswordSchema.parse(req.body);
     const user = await prisma.profile.findUnique({ where: { email: data.email } });
 
     if (user) {
-      const resetToken = crypto.randomBytes(32).toString('hex');
+      const rawToken = crypto.randomBytes(32).toString('hex');
       const resetTokenExpiresAt = new Date(Date.now() + 3600000); // 1 hour
 
       await prisma.profile.update({
         where: { id: user.id },
-        data: { resetToken, resetTokenExpiresAt },
+        data: { resetToken: hashToken(rawToken), resetTokenExpiresAt },
       });
 
       // Usually it's better to use FRONTEND_URL or deriving it from req
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
+      const resetLink = `${frontendUrl}/reset-password?token=${rawToken}`;
 
       await sendPasswordResetEmail(user.email, resetLink);
     }
@@ -281,18 +327,20 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
   } catch (error) {
     if (error instanceof z.ZodError) return res.status(400).json({ error: error.errors });
     console.error(error);
-    return res.status(500).json({ error: 'Failed to request reset' });
+    return res
+      .status(500)
+      .json({ error: 'Service temporarily unavailable, please try again later.' });
   }
 });
 
 // Reset password
-router.post('/reset-password', async (req: Request, res: Response) => {
+router.post('/reset-password', tokenLimiter, async (req: Request, res: Response) => {
   try {
     const data = resetPasswordSchema.parse(req.body);
 
     const user = await prisma.profile.findFirst({
       where: {
-        resetToken: data.token,
+        resetToken: hashToken(data.token),
         resetTokenExpiresAt: { gt: new Date() },
       },
     });
@@ -309,6 +357,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
         password: hashedPassword,
         resetToken: null,
         resetTokenExpiresAt: null,
+        tokenVersion: { increment: 1 },
       },
     });
 

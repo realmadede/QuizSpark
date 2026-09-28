@@ -285,7 +285,8 @@ function QuizEditor() {
                 ))}
               </ul>
 
-              {question.answers.length < (isTrueFalseQuestion(question.answers) ? 2 : 6) ? (
+              {question.answers.length <
+              (isTrueFalseQuestion(question.answers) ? 2 : 6) ? (
                 <Button
                   size="sm"
                   variant="outline"
