@@ -66,7 +66,7 @@ export function initializeSocket(io: Server) {
           playerId: data.playerId,
         });
       } catch {
-        console.error('Error joining session:', error);
+        console.error("Error occurred");
         socket.emit('error', 'Failed to join session');
       }
     });
@@ -110,7 +110,7 @@ export function initializeSocket(io: Server) {
 
         console.log(`Host joined session ${data.sessionId}`);
       } catch {
-        console.error('Error host joining session:', error);
+        console.error("Error occurred");
         socket.emit('error', 'Failed to join session');
       }
     });
@@ -144,13 +144,13 @@ export function initializeSocket(io: Server) {
             playerId: socket.data.playerId,
           });
         } catch {
-          console.error('Error updating player disconnect:', error);
+          console.error("Error occurred");
         }
       }
     });
 
     socket.on('error', (error) => {
-      console.error('Socket error:', error);
+      console.error("Error occurred");
     });
   });
 }

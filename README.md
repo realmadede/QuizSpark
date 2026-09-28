@@ -8,24 +8,24 @@ QuizSpark was developed as part of a hands-on practical software development tra
 
 _Note: QuizSpark is an independent, open-source educational project and is not an official SAFCO commercial product, nor is it affiliated with Kahoot!._
 
-## 🚀 Features
+## Features
 
 **For Teachers (Hosts)**
 
-- 🔒 **Secure Accounts**: Registration, login, password reset, and email verification.
-- 📝 **Quiz Management**: Create, edit, and store drafts of custom quizzes.
-- ⏱️ **Question Controls**: Configurable timers and dynamic point values per question.
-- 🎮 **Live Game Hosting**: Generate unique Game PINs and manage the lobby.
-- 📊 **Real-time Results**: Live leaderboards and session analytics.
+- **Secure Accounts**: Registration, login, password reset, and email verification.
+- **Quiz Management**: Create, edit, and store drafts of custom quizzes.
+- **Question Controls**: Configurable timers and dynamic point values per question.
+- **Live Game Hosting**: Generate unique Game PINs and manage the lobby.
+- **Real-time Results**: Live leaderboards and session analytics.
 
 **For Students (Players)**
 
-- 🚪 **Instant Join**: No account required—just a Game PIN and a nickname.
-- ⚡ **Real-Time Gameplay**: Questions appear synchronized with the host.
-- 🎯 **Interactive Answers**: Fast, engaging answer submission.
-- 🏆 **Live Scoring**: See points and leaderboard standing instantly.
+- **Instant Join**: No account required—just a Game PIN and a nickname.
+- **Real-Time Gameplay**: Questions appear synchronized with the host.
+- **Interactive Answers**: Fast, engaging answer submission.
+- **Live Scoring**: See points and leaderboard standing instantly.
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 **Frontend**
 
@@ -45,7 +45,7 @@ _Note: QuizSpark is an independent, open-source educational project and is not a
 - **bcryptjs** (Password hashing)
 - **ioredis** (Distributed rate limiting)
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 QuizSpark/
@@ -68,7 +68,7 @@ QuizSpark/
 └── package.json              # Workspace/Frontend dependencies
 ```
 
-## 💻 Local Development
+## Local Development
 
 QuizSpark is optimized for a seamless `localhost` developer experience.
 
@@ -106,7 +106,7 @@ npm run dev
 # API requests are automatically proxied to port 5000
 ```
 
-## 📚 Documentation Matrix
+## Documentation Matrix
 
 | Concern               | Status                    | Where documented                                            |
 | --------------------- | ------------------------- | ----------------------------------------------------------- |
@@ -121,7 +121,7 @@ npm run dev
 | Real-time / Socket.io | Implemented               | [PROJECT_DOCUMENTATION.md](./docs/PROJECT_DOCUMENTATION.md) |
 | Open source           | Public Repository         | [README.md](./README.md)                                    |
 
-## 🤝 Open Source & Contributing
+## Open Source & Contributing
 
 QuizSpark is an open-source educational project. We welcome developers to clone, explore, and run the project locally.
 

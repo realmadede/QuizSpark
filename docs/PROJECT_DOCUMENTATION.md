@@ -2,7 +2,7 @@
 
 This document covers the complete technical architecture and internal workflows of the QuizSpark application.
 
-## 🏗️ System Architecture
+## System Architecture
 
 QuizSpark follows a decoupled Client-Server architecture utilizing a real-time event-driven layer.
 
@@ -21,7 +21,7 @@ QuizSpark follows a decoupled Client-Server architecture utilizing a real-time e
             PostgreSQL
 ```
 
-## 🖥️ Frontend Architecture
+## Frontend Architecture
 
 The frontend is built with React 19, Vite, and TanStack Start for file-based routing.
 
@@ -37,7 +37,7 @@ The frontend is built with React 19, Vite, and TanStack Start for file-based rou
 - **`src/hooks/`**: Custom logic, notably `useSocket.ts` which manages the lifecycle of the Socket.io client connection.
 - **`src/lib/`**: Utilities, including `api-client.ts` which handles normalized HTTP requests and credential inclusion.
 
-## ⚙️ Backend Architecture
+## Backend Architecture
 
 The backend is an Express server running in Node.js, written in TypeScript.
 
@@ -92,7 +92,7 @@ Handlers are located in `backend/src/socket/handlers.ts`.
 
 _Note: Answer submissions (`/api/players/answer`) are handled via REST POST requests to easily enforce distributed rate limits, and the server subsequently broadcasts the updated state via Socket.io._
 
-## 🗄️ Database Schema (Prisma)
+## Database Schema (Prisma)
 
 The database utilizes PostgreSQL, managed via Prisma.
 
@@ -113,7 +113,7 @@ Migrations are stored in `backend/prisma/migrations/`.
 - **Development**: Run `npx prisma db push` or `npx prisma migrate dev`.
 - **Production**: Run `npx prisma migrate deploy` during the build/release phase.
 
-## 🔐 Environment Variables
+## Environment Variables
 
 ### Frontend (`.env`)
 
@@ -129,7 +129,7 @@ Migrations are stored in `backend/prisma/migrations/`.
 | `REDIS_URL`                    | Optional   | Used for distributed rate limiting in production. Falls back to memory locally. |
 | `SMTP_EMAIL` / `SMTP_PASSWORD` | Optional   | NodeMailer configuration. If omitted, emails print to the console.              |
 
-## 🚧 Known Limitations & Not-Implemented Features
+## Known Limitations & Not-Implemented Features
 
 To ensure developers understand the current boundaries of the repository:
 

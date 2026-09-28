@@ -2,7 +2,7 @@
 
 This document outlines the security controls, policies, and mechanisms currently implemented in the `main` branch of the QuizSpark repository.
 
-## 🛡️ Implemented Security Controls
+## Implemented Security Controls
 
 ### 1. Authentication
 
@@ -65,7 +65,7 @@ This document outlines the security controls, policies, and mechanisms currently
   - `RATE LIMIT EXCEEDED` tracks abusive IPs.
   - Error 500s mask stack traces from users but log internally.
 
-## ❌ Not Implemented / Out of Scope
+## Not Implemented / Out of Scope
 
 The following controls are not currently implemented as they fall outside the current feature scope of the repository:
 
@@ -74,7 +74,7 @@ The following controls are not currently implemented as they fall outside the cu
 - **Webhook Verification:** (No external webhooks consumed).
 - **Automated SIEM Monitoring:** (Logs are standard stdout).
 
-## 📜 Security Audit History
+## Security Audit History
 
 During the development of QuizSpark, several comprehensive security audits were performed, and the following specific hardening measures were implemented in the current codebase:
 
