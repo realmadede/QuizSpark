@@ -22,7 +22,8 @@ export function useSocket(config: SocketConfig, onEvent: () => void) {
     if (!config.sessionId || !config.role) return;
 
     // Use explicit path and options to ensure connection works across devices
-    const socket = io(window.location.origin, {
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+    const socket = io(socketUrl, {
       query: {
         sessionId: config.sessionId,
         role: config.role,

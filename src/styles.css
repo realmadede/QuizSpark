@@ -1435,6 +1435,67 @@ td:nth-child(2) {
 }
 
 /* ══════════════════════════════
+   STORY BEHIND QUIZSPARK
+══════════════════════════════ */
+.story-section {
+  position: relative;
+  z-index: 1;
+  padding: 5rem 1.5rem;
+  background: #fafafa;
+  border-top: 1px solid #e5e5e5;
+}
+
+.story-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.story-card {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.story-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #404040;
+}
+
+.story-visual-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e5e5;
+  flex-wrap: wrap;
+}
+
+.story-visual-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #171717;
+  padding: 0.75rem 1.25rem;
+  background: #ffffff;
+  border-radius: 99px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+.story-visual-arrow {
+  color: #a3a3a3;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════
    RESPONSIVE
 ══════════════════════════════ */
 @media (max-width: 1024px) {
@@ -1465,6 +1526,7 @@ td:nth-child(2) {
   .features-section,
   .how-section,
   .trust-section,
+  .story-section,
   .comparison-section,
   .pricing-section,
   .faq-section,
@@ -1473,6 +1535,7 @@ td:nth-child(2) {
   
   .cta-section { padding: 0 1rem 4rem; }
   .cta-card { padding: 3rem 1.25rem; }
+  .story-card { padding: 2rem 1.5rem; }
   
   .mock-options { grid-template-columns: 1fr; }
   .mock-body { padding: 1rem; }

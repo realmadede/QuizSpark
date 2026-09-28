@@ -37,9 +37,9 @@ I built this project because I firmly believe that learning should be fun. Teach
 * [JSON Web Tokens (JWT)](https://jwt.io/) (Secure authentication)
 * [Nodemailer](https://nodemailer.com/) (For secure email communications)
 
-## Getting Started
+## Local Development
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing. I have tried to make this as straightforward as possible!
+This is the recommended way to run and test QuizSpark while developing the project.
 
 ### Prerequisites
 
@@ -70,27 +70,14 @@ npm install
 
 ### 3. Environment Variables
 
-Navigate to the `backend/` directory and create a new file named `.env`. Add the following keys and adjust the database credentials to match your local PostgreSQL setup:
+Navigate to the `backend/` directory and copy `.env.example` to `.env`. Adjust the database credentials to match your local PostgreSQL setup:
 
-```env
-# /backend/.env
-
-# PostgreSQL Database Connection String
-DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/quizspark?schema=public"
-
-# Authentication Secret (Random cryptographic string)
-JWT_SECRET="super_secret_jwt_key_for_local_development"
-
-# Backend API & WebSocket Port
-PORT=5000
-
-# Frontend URL (For CORS policies)
-FRONTEND_URL="http://localhost:5173"
-
-# SMTP Settings for Emails (Optional for local testing)
-# SMTP_EMAIL="your_email@gmail.com"
-# SMTP_PASSWORD="your_app_password"
+```bash
+cd backend
+cp .env.example .env
 ```
+
+*(You can also configure frontend variables in the root directory by copying `.env.example` to `.env`, though it defaults to `localhost` automatically).*
 
 ### 4. Database Setup
 
@@ -122,6 +109,12 @@ npm run dev
 ```
 
 (The frontend UI will start on `http://localhost:5173`)
+
+## Production Deployment
+
+If you want to deploy QuizSpark to production cloud infrastructure, please see our detailed deployment guide. The project configuration fully supports deployments to providers like Vercel, Render, or Fly.io.
+
+👉 [View Production Deployment Guide (production.md)](./production.md)
 
 ## Project Structure
 

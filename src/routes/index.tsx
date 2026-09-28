@@ -427,6 +427,61 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* ════ STORY BEHIND QUIZSPARK ════ */}
+      <section className="story-section">
+        <div className="story-inner">
+          <div className="section-label">The Story Behind QuizSpark</div>
+          <h2 className="section-title">Built During Practical Training</h2>
+          
+          <div className="story-card glass-card">
+            <div className="story-content">
+              <p>
+                QuizSpark was developed as part of a practical training session at{" "}
+                <a 
+                  href="https://safcofintech.co.tz/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#00c767] hover:underline font-semibold"
+                >
+                  SAFCO FinTech
+                </a>
+                , a center dedicated to providing hands-on technology and computer education in Tanzania. 
+                The project emerged directly from this learning environment with a clear goal: to make 
+                classroom education more interactive.
+              </p>
+              <p>
+                Rather than building a standard demonstration app, the objective was to apply real-world 
+                software engineering skills to a genuine educational use case. QuizSpark seamlessly combines 
+                classroom interaction, quiz management, and real-time student participation into a single, 
+                cohesive platform.
+              </p>
+              <p>
+                Ultimately, this project represents both a meaningful training experience and a practical 
+                tool designed to keep students actively engaged and help instructors deliver dynamic, 
+                technology-driven lessons.
+              </p>
+            </div>
+            
+            <div className="story-visual-flow" aria-hidden="true">
+              <div className="story-visual-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                Practical Training
+              </div>
+              <svg className="story-visual-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <div className="story-visual-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Real Project
+              </div>
+              <svg className="story-visual-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <div className="story-visual-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Educational Tool
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ════ PRICING ════ */}
       <section id="pricing" className="pricing-section">
         <div className="pricing-inner">

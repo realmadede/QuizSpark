@@ -183,7 +183,7 @@ router.patch('/:quizId', authMiddleware, async (req: Request, res: Response) => 
         select: { id: true },
       });
 
-      const newQuestionIds = data.questions.map((q: { id: string }) => q.id).filter(Boolean);
+      const newQuestionIds = data.questions.map((q: any) => q.id).filter(Boolean);
       const questionsToDelete = currentQuestions.filter(
         (q: { id: string }) => !newQuestionIds.includes(q.id)
       );
