@@ -11,9 +11,9 @@ export function optionStyle(index: number) {
   return OPTION_STYLES[index % OPTION_STYLES.length]!;
 }
 
-export function isTrueFalseQuestion(answers: { text: string }[]): boolean {
-  if (answers.length !== 2) return false;
-  const texts = answers.map((a) => a.text.trim().toLowerCase());
+export function isTrueFalseQuestion(answers?: { text?: string }[]): boolean {
+  if (!answers || !Array.isArray(answers) || answers.length !== 2) return false;
+  const texts = answers.map((a) => (a?.text || "").trim().toLowerCase());
   const hasTrueAndFalse = texts.includes("true") && texts.includes("false");
   return hasTrueAndFalse;
 }

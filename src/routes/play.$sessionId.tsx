@@ -313,7 +313,7 @@ function PlayPage() {
   const question = data.question;
 
   const shuffledAnswers = useMemo(() => {
-    if (!question || !player) return [];
+    if (!question || !player || !Array.isArray(question.answers)) return [];
     const isTF = isTrueFalseQuestion(question.answers);
     const answersToUse = question.answers.slice(0, isTF ? 2 : undefined);
 
@@ -396,7 +396,7 @@ function PlayPage() {
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
         <div className="flex items-center justify-between text-sm text-ink-muted">
           <span>
-            Question {data.questionIndex + 1} of {data.totalQuestions}
+            Question {(data?.questionIndex ?? 0) + 1} of {data?.totalQuestions ?? "?"}
           </span>
           <span className="rounded-full bg-white/10 px-3 py-1 font-bold text-ink-foreground">
             {seconds}s
@@ -404,7 +404,7 @@ function PlayPage() {
         </div>
 
         <h1 className="display-title mt-6 text-center text-2xl sm:text-3xl">
-          {question.text}
+          {question?.text || "..."}
         </h1>
 
         <div className="mt-8 grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
