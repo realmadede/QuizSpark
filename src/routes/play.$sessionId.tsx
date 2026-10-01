@@ -122,6 +122,38 @@ function PlayPage() {
   const data = state.data;
   const seconds = useCountdownLabel(data?.endsAt, now);
 
+  const question = data?.question;
+
+  const shuffledAnswers = useMemo(() => {
+    if (!question || !player || !Array.isArray(question.answers)) return [];
+    const isTF = isTrueFalseQuestion(question.answers);
+    const answersToUse = question.answers.slice(0, isTF ? 2 : undefined);
+
+    if (isTF) return answersToUse; // Never shuffle True/False
+
+    // Create a stable random seed based on player ID and question ID
+    const str = player.playerId + question.id;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+
+    // Simple PRNG
+    let seed = hash;
+    const random = () => {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    };
+
+    const shuffled = [...answersToUse];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, [question, player?.playerId]);
+
   if (!player) return null;
 
   function leave() {
@@ -310,37 +342,7 @@ function PlayPage() {
     );
   }
 
-  const question = data.question;
 
-  const shuffledAnswers = useMemo(() => {
-    if (!question || !player || !Array.isArray(question.answers)) return [];
-    const isTF = isTrueFalseQuestion(question.answers);
-    const answersToUse = question.answers.slice(0, isTF ? 2 : undefined);
-
-    if (isTF) return answersToUse; // Never shuffle True/False
-
-    // Create a stable random seed based on player ID and question ID
-    const str = player.playerId + question.id;
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0;
-    }
-
-    // Simple PRNG
-    let seed = hash;
-    const random = () => {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    };
-
-    const shuffled = [...answersToUse];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }, [question, player?.playerId]);
 
   if (!question) {
     return (

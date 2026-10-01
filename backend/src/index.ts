@@ -66,14 +66,8 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!isProd) {
-        // Local development allows common dev ports
-        if (
-          !origin ||
-          origin.startsWith('http://localhost') ||
-          origin.startsWith('http://127.0.0.1')
-        ) {
-          return callback(null, true);
-        }
+        // Local development allows all origins for easy network testing (e.g. mobile devices)
+        return callback(null, true);
       } else {
         // Production strictly enforces FRONTEND_URL
         const allowedProdOrigin = process.env.FRONTEND_URL?.replace(/\/$/, '');

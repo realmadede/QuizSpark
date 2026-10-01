@@ -66,7 +66,7 @@ function ProjectorPage() {
       <main className="ink-surface flex min-h-screen flex-col items-center justify-center px-8 text-center">
         <div className="mb-8 rounded-2xl bg-white p-6 shadow-2xl">
           <QRCodeSVG
-            value={`${window.location.origin}/?pin=${data.pin}`}
+            value={`${window.location.origin}/join?pin=${data.pin}`}
             size={360}
             level="H"
           />

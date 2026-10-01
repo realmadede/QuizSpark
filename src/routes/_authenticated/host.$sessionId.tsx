@@ -182,7 +182,7 @@ function HostPage() {
             <h2 className="display-title text-2xl">Waiting for players…</h2>
             <div className="mt-8 mb-6 rounded-xl bg-white p-4">
               <QRCodeSVG
-                value={`${window.location.origin}/?pin=${data.pin}`}
+                value={`${window.location.origin}/join?pin=${data.pin}`}
                 size={240}
                 level="H"
               />
